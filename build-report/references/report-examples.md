@@ -1,17 +1,17 @@
 # Build Report Examples
 
-Complete examples of build reports for different scenarios.
+Complete examples showing how to structure reports that **link to official documentation** instead of duplicating solutions.
 
 ---
 
-## Example 1: Monorepo TypeScript Build
+## Example 1: TypeScript Build Failure - Linking to Docs
 
 ### Context
 
 - **Project:** E-commerce platform monorepo
 - **Tools:** TypeScript, ESLint, Webpack
-- **Packages:** 3 (frontend, backend, shared)
 - **Build command:** `npm run build:all`
+- **Focus:** Show how to format reports with doc links, not inline solutions
 
 ### Build Output (Raw)
 
@@ -81,12 +81,14 @@ Build failed with **4 critical errors** across 3 packages. Primary issues are ty
 
 ### 🔴 CRITICAL - TypeScript Type Errors (3 errors)
 
-Type system violations preventing compilation. These must be fixed before build can succeed.
+Type system violations preventing compilation. Root cause analysis shows cascading errors from shared package.
 
 **Affected files:**
 
 - [packages/shared/src/types/Product.ts](packages/shared/src/types/Product.ts#L15) (2 errors)
 - [packages/frontend/src/components/Cart.tsx](packages/frontend/src/components/Cart.tsx#L45) (1 error)
+
+---
 
 #### Error 1: TS2322 - Type Assignment Error
 
@@ -95,40 +97,14 @@ packages/shared/src/types/Product.ts:15:3
 Type 'string' is not assignable to type 'number'
 ```
 
-**Problem:** The `quantity` property is defined as `number` but receives a string value.
+**Context:** The `quantity` property expects `number` but receives string `"10"`.
 
-**Solution:**
+📖 **Official Documentation:**
 
-```typescript
-// ❌ Current code
-interface Product {
-	id: string;
-	name: string;
-	quantity: number; // Expects number
-}
+- [TypeScript: Basic Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
+- [Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)
 
-const product: Product = {
-	id: "prod-123",
-	name: "Laptop",
-	quantity: "10", // ❌ Passing string
-};
-
-// ✅ Fix option 1: Convert to number
-const product: Product = {
-	id: "prod-123",
-	name: "Laptop",
-	quantity: 10, // Parse to number
-};
-
-// ✅ Fix option 2: If data comes from API
-const product: Product = {
-	id: apiData.id,
-	name: apiData.name,
-	quantity: Number(apiData.quantity), // Convert string to number
-};
-```
-
-**Root cause:** Likely receiving data from API as strings but interface expects numbers.
+💡 **Quick hint:** API likely returns strings. Check type conversion (Number(), parseInt()) or update interface to accept string | number. See Type Compatibility docs for details.
 
 ---
 
@@ -139,39 +115,14 @@ packages/shared/src/types/Product.ts:23:5
 Property 'category' does not exist on type 'Product'
 ```
 
-**Problem:** Attempting to access `category` property that isn't defined in the `Product` interface.
+**Context:** Accessing undefined property `category` on Product interface.
 
-**Solution:**
+📖 **Official Documentation:**
 
-```typescript
-// ❌ Current code
-interface Product {
-	id: string;
-	name: string;
-	quantity: number;
-	// 'category' is missing
-}
+- [Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
+- [Optional Properties](https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties)
 
-// Usage
-const mappedProduct = {
-	category: item.category, // ❌ Property doesn't exist
-	// ...
-};
-
-// ✅ Fix: Add missing property
-interface Product {
-	id: string;
-	name: string;
-	quantity: number;
-	category: string; // Add this property
-}
-```
-
-**Next steps:**
-
-1. Add `category: string` to Product interface
-2. Update all Product instances to include category
-3. Verify database schema matches
+💡 **Quick hint:** Add missing property to interface or use optional property if not always present. Verify database schema matches expected interface.
 
 ---
 
@@ -182,46 +133,15 @@ packages/frontend/src/components/Cart.tsx:45:7
 Argument of type 'Product[]' is not assignable to parameter of type 'CartItem[]'
 ```
 
-**Problem:** Function expects `CartItem[]` but receives `Product[]`. These are different types.
+**Context:** Function `calculateTotal()` expects CartItem[] but receives Product[].
 
-**Solution:**
+📖 **Official Documentation:**
 
-```typescript
-// ❌ Current code
-function calculateTotal(items: CartItem[]): number {
-	return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-}
+- [Type Assertions](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions)
+- [Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)
+- [Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html)
 
-// Usage
-calculateTotal(products); // ❌ products is Product[], not CartItem[]
-
-// ✅ Fix option 1: Convert Product to CartItem
-const cartItems: CartItem[] = products.map((product) => ({
-	productId: product.id,
-	name: product.name,
-	price: product.price,
-	quantity: product.quantity,
-}));
-calculateTotal(cartItems);
-
-// ✅ Fix option 2: Make function accept both types
-function calculateTotal(items: (CartItem | Product)[]): number {
-	return items.reduce((sum, item) => {
-		const price = "price" in item ? item.price : item.unitPrice;
-		return sum + price * item.quantity;
-	}, 0);
-}
-
-// ✅ Fix option 3: Extend interface
-interface CartItem extends Product {
-	quantity: number;
-	addedAt: Date;
-}
-```
-
-**Recommendation:** Option 1 is cleanest if Product and CartItem have different shapes. Creates clear separation of concerns.
-
----
+## 💡 **Quick hint:** Consider mapping Product[] to CartItem[], using generics to accept both types, or making CartItem extend Product. See Generics docs for best approach.
 
 ### 🔴 CRITICAL - Missing Type Declaration (1 error)
 
@@ -232,33 +152,14 @@ packages/backend/src/server.ts:89:12
 Cannot find name 'Express'
 ```
 
-**Problem:** TypeScript can't find the `Express` type. Type definitions not installed.
+**Context:** TypeScript can't find Express type. Type definitions package not installed.
 
-**Solution:**
+📖 **Official Documentation:**
 
-```bash
-# Install Express type definitions
-cd packages/backend
-npm install --save-dev @types/express
+- [DefinitelyTyped @types packages](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
+- [npm @types](https://www.npmjs.com/~types)
 
-# Or from root of monorepo
-npm install --save-dev @types/express --workspace=@ecommerce/backend
-```
-
-**Then update imports:**
-
-```typescript
-// ❌ Current code
-const app: Express = express();
-
-// ✅ After installing @types/express
-import express, { Express } from "express";
-const app: Express = express();
-
-// Or simpler (let TypeScript infer)
-import express from "express";
-const app = express(); // Type inferred as Express.Application
-```
+💡 **Quick hint:** Install `@types/express` package. See Declaration Files docs for proper setup.
 
 ---
 
@@ -266,47 +167,20 @@ const app = express(); // Type inferred as Express.Application
 
 ### 🟡 HIGH - Code Quality Issues (2 warnings)
 
-Non-blocking issues that should be addressed before deployment.
-
-#### Warning 1: Unused Variable
+#### Warning 1 & 2: Unused Variables and Console Statements
 
 ```
-packages/frontend/src/App.tsx:12:7
-'oldComponent' is defined but never used (@typescript-eslint/no-unused-vars)
+packages/frontend/src/App.tsx:12:7 - 'oldComponent' is defined but never used
+packages/frontend/src/App.tsx:28:5 - Unexpected console statement
 ```
 
-**Solution:**
+📖 **Official Documentation:**
 
-```typescript
-// ❌ Remove if truly unused
-const oldComponent = <OldUI />;  // Delete this line
+- [ESLint: no-unused-vars](https://eslint.org/docs/latest/rules/no-unused-vars)
+- [TypeScript ESLint: no-unused-vars](https://typescript-eslint.io/rules/no-unused-vars/)
+- [ESLint: no-console](https://eslint.org/docs/latest/rules/no-console)
 
-// ✅ Or if keeping for reference
-const _oldComponent = <OldUI />;  // _ prefix signals intention
-```
-
----
-
-#### Warning 2: Console Statement
-
-```
-packages/frontend/src/App.tsx:28:5
-Unexpected console statement (no-console)
-```
-
-**Solution:**
-
-```typescript
-// ❌ Current
-console.log("Debug info");
-
-// ✅ Use proper logger
-import { logger } from "@/utils/logger";
-logger.debug("Debug info");
-
-// ✅ Or remove if not needed
-// console.log('Debug info');  // Remove
-```
+💡 **Quick hint:** Remove unused vars or prefix with `_`. Replace console with proper logger. Check ESLint docs for auto-fix options.
 
 ---
 
@@ -319,56 +193,15 @@ ERROR in packages/frontend/dist/main.js
 File size exceeds 500 kB limit (actual: 847 kB)
 ```
 
-**Problem:** Main bundle is 69% larger than recommended (847 KB vs 500 KB limit).
+**Context:** Main bundle 69% over recommended size.
 
-**Solutions (in order of impact):**
+📖 **Official Documentation:**
 
-1. **Code splitting** (recommended):
+- [Webpack: Code Splitting](https://webpack.js.org/guides/code-splitting/)
+- [Webpack: Performance](https://webpack.js.org/configuration/performance/)
+- [Webpack: Bundle Analysis](https://webpack.js.org/guides/code-splitting/#bundle-analysis)
 
-```javascript
-// webpack.config.js
-module.exports = {
-	optimization: {
-		splitChunks: {
-			chunks: "all",
-			cacheGroups: {
-				vendor: {
-					test: /[\\/]node_modules[\\/]/,
-					name: "vendors",
-					priority: 10,
-				},
-				common: {
-					minChunks: 2,
-					priority: 5,
-					reuseExistingChunk: true,
-				},
-			},
-		},
-	},
-};
-```
-
-2. **Lazy load routes:**
-
-```typescript
-// ❌ Import all routes upfront
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-
-// ✅ Lazy load
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Profile = lazy(() => import("./pages/Profile"));
-```
-
-3. **Analyze bundle:**
-
-```bash
-npm install --save-dev webpack-bundle-analyzer
-# Then check what's taking space
-npm run build -- --analyze
-```
-
-**Expected impact:** Should reduce main bundle to ~300-400 KB.
+💡 **Quick hint:** Enable code splitting, lazy load routes, analyze bundle with webpack-bundle-analyzer. See Code Splitting guide for implementation.
 
 ---
 
@@ -397,31 +230,49 @@ npm run build -- --analyze
 
 ## 🎯 Next Steps
 
-### Immediate Actions (Required for build)
+### Immediate Actions (Required for build) ✅
 
-1. ✅ **Fix Product interface** in `shared/src/types/Product.ts`
-   - Change `quantity: "10"` to `quantity: 10` (line 15)
-   - Add `category: string` property to interface
-2. ✅ **Install @types/express** in backend package
+**Priority 1: Fix type definitions in shared package**
 
-   ```bash
-   npm install --save-dev @types/express --workspace=@ecommerce/backend
-   ```
+- 📍 packages/shared/src/types/Product.ts:15 - Convert quantity to number
+- 📍 packages/shared/src/types/Product.ts:23 - Add category property
+- 📖 [TypeScript: Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
 
-3. ✅ **Fix type mismatch** in `frontend/src/components/Cart.tsx`
-   - Convert `Product[]` to `CartItem[]` before passing to `calculateTotal()`
+**Priority 2: Install missing type definitions**
 
-### Follow-up Actions (Recommended)
+- 📍 packages/backend - Install @types/express
+- 📖 [DefinitelyTyped packages](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
 
-4. 🟡 **Remove unused variable** in `App.tsx` line 12
-5. 🟡 **Replace console.log** with logger utility
-6. 🟢 **Implement code splitting** to reduce bundle size
+**Priority 3: Fix type conversion in frontend**
 
-### Configuration Improvements
+- 📍 packages/frontend/src/components/Cart.tsx:45 - Map Product[] to CartItem[]
+- 📖 [TypeScript: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html)
 
-7. 📝 **Add pre-commit hook** to catch unused vars before commit
-8. 📝 **Configure bundle size limits** in CI/CD
-9. 📝 **Update TypeScript** to latest version (5.3.3)
+### Follow-up Actions (Code quality) 🟡
+
+**Clean up warnings:**
+
+- Remove unused variables or prefix with underscore
+- Replace console statements with logger
+- 📖 [ESLint: no-unused-vars](https://eslint.org/docs/latest/rules/no-unused-vars)
+
+### Optional Improvements (Performance) 🟢
+
+**Optimize bundle size:**
+
+- Implement code splitting in webpack config
+- Enable lazy loading for routes
+- Analyze bundle with webpack-bundle-analyzer
+- 📖 [Webpack: Code Splitting Guide](https://webpack.js.org/guides/code-splitting/)
+
+### Configuration Improvements 📝
+
+- Add pre-commit hooks to catch errors early
+  - 📖 [Husky + lint-staged](https://typicode.github.io/husky/)
+- Enable stricter TypeScript compiler options
+  - 📖 [TSConfig: strict mode](https://www.typescriptlang.org/tsconfig#strict)
+- Configure CI checks before merge
+  - 📖 [GitHub Actions: Node.js CI](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
 
 ---
 
@@ -537,201 +388,121 @@ src/components/Editor.tsx:67:3
 **Context:**
 
 ```typescript
-// Line 67
-const [error, setError] = useState<string | null>(null);
-```
-
-**Solution:**
-
-```typescript
-// Option 1: Remove if not needed
-const [error] = useState<string | null>(null);
-
-// Option 2: Actually use it
-const handleSave = async () => {
-	try {
-		await saveContent(content);
-	} catch (err) {
-		setError(err.message); // Now it's used
-	}
-};
-
-// Option 3: Keep for future use (signal intention)
-const [error, _setError] = useState<string | null>(null);
-```
-
----
-
-#### Warning 3: Missing Return Type
-
-```
-src/utils/markdown.ts:12:1
-Missing return type on function (@typescript-eslint/explicit-function-return-type)
-```
-
-**Context:**
-
-```typescript
-// Line 12
-export function parseMarkdown(content) {
-	// ...
-}
-```
-
-**Solution:**
-
-```typescript
-// ✅ Add explicit return type
-export function parseMarkdown(content: string): ParsedMarkdown {
-	// ...
-}
-
-// Or if complex, let TypeScript infer but document
-export function parseMarkdown(content: string) {
-	// Automatically inferred as string
-	return marked.parse(content);
-}
-```
-
----
-
-## 📦 Build Artifacts
-
-### Generated Files
-
-| File                    | Size      | Gzipped                  | Status |
-| ----------------------- | --------- | ------------------------ | ------ |
-| index.html              | 2.45 KB   | -                        | ✅     |
-| assets/index-[hash].css | 45.67 KB  | 12.34 KB (73% reduction) | ✅     |
-| assets/index-[hash].js  | 234.12 KB | 89.45 KB (62% reduction) | ✅     |
-
-**Total size:** 282.24 KB  
-**Total gzipped:** 101.79 KB (64% reduction)
-
----
-
-## 📈 Build Metrics
-
-| Metric              | Value | Status |
-| ------------------- | ----- | ------ |
-| Errors              | 0     | ✅     |
-| Warnings            | 3     | 🟢     |
-| Build duration      | 3.42s | ✅     |
-| Modules transformed | 347   | ✅     |
-| Compression ratio   | 64%   | ✅     |
-
----
-
-## 🎯 Next Steps
-
-### Before Next Release
-
-1. 🟢 Remove or replace `console.log` statements in production code
-2. 🟢 Either use `setError` function or remove unused state
-3. 🟢 Add explicit return types to utility functions
-
-### Optional Improvements
-
-4. 📝 Configure ESLint to auto-fix these warnings on save
-5. 📝 Add pre-commit hook to prevent console statements
-6. 📝 Consider extracting markdown utilities to shared package
-
----
-
-_Generated by build-report skill • 15 Jan 2024 15:45_
-
----
-
-## Example 3: CI/CD Pipeline Failure
+## Example 2: Clean Build with Warnings - Simple Format
 
 ### Context
 
-- **Project:** REST API
-- **Tools:** TypeScript, Jest, ESLint
-- **Environment:** GitHub Actions CI
-- **Build command:** `npm run ci`
+- **Project:** Blog CMS
+- **Tools:** Vite, TypeScript, ESLint
+- **Build command:** `npm run build`
+- **Focus:** Show simpler report format for successful builds with warnings
 
-### Build Output (Raw)
-
-```
-> api-service@3.2.1 ci
-> npm run lint && npm run test && npm run build
-
-> api-service@3.2.1 lint
-> eslint src/**/*.ts
-
-src/controllers/userController.ts
-  34:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
-  56:5   error  'id' is defined but never used  @typescript-eslint/no-unused-vars
-
-src/services/authService.ts
-  89:7  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
-
-✖ 3 problems (3 errors, 0 warnings)
-
-npm ERR! code ELIFECYCLE
-npm ERR! errno 1
-npm ERR! api-service@3.2.1 lint: `eslint src/**/*.ts`
-npm ERR! Exit status 1
-
-> api-service@3.2.1 test
-> jest
-
- FAIL  src/services/authService.test.ts
-  ● AuthService › should validate token
-
-    expect(received).toBe(expected) // Object.is equality
-
-    Expected: true
-    Received: false
-
-      89 |   it('should validate token', () => {
-      90 |     const result = authService.validateToken('valid-token');
-    > 91 |     expect(result).toBe(true);
-         |                    ^
-      92 |   });
-
- FAIL  src/controllers/userController.test.ts
-  ● UserController › should create user
-
-    TypeError: Cannot read property 'create' of undefined
-
-      45 |   it('should create user', async () => {
-      46 |     const user = await userController.createUser(mockRequest);
-    > 47 |     expect(user).toBeDefined();
-         |     ^
-      48 |   });
-
-Test Suites: 2 failed, 5 passed, 7 total
-Tests:       2 failed, 23 passed, 25 total
-Snapshots:   0 total
-Time:        2.456 s
-
-npm ERR! Test failed. See above for more details.
-```
-
-### Generated Report
+### Generated Report (Simplified)
 
 ---
 
-# 🔴 CI PIPELINE FAILED
+# ✅ BUILD SUCCEEDED
 
-**Project:** API Service  
-**Pipeline:** GitHub Actions CI  
-**Command:** `npm run ci`  
-**Date:** 2024-01-15 16:20:15  
-**Commit:** a3f7b92  
-**Branch:** feature/user-management
+**Project:** Blog CMS
+**Build command:** `npm run build`
+**Duration:** 3.42 seconds
 
 ---
 
 ## 📊 Executive Summary
 
-CI pipeline failed at **lint stage** with 3 ESLint errors. Additional **2 test failures** were detected when tests ran. All issues must be resolved before merge.
+Build completed successfully with **3 code quality warnings**. All warnings are non-blocking ESLint issues. Production assets generated with good compression (64%).
 
-**Impact:** ❌ Cannot merge to main  
-**Estimated fix time:** 20-30 minutes  
+**Deployment:** ✅ Ready to deploy
+**Recommendation:** Address warnings before next sprint for codebase health.
+
+---
+
+## ⚠️ Warnings (3 total)
+
+### 🟢 MEDIUM - Code Quality Improvements
+
+**Warning 1: Console Statement**
+```
+
+src/components/Editor.tsx:45:9 - Unexpected console statement (no-console)
+
+```
+
+📖 [ESLint: no-console](https://eslint.org/docs/latest/rules/no-console)
+💡 Replace with proper logger or remove. Check auto-fix options.
+
+---
+
+**Warning 2: Unused Variable**
+```
+
+src/components/Editor.tsx:67:3 - 'setError' is assigned but never used
+
+```
+
+📖 [TypeScript ESLint: no-unused-vars](https://typescript-eslint.io/rules/no-unused-vars/)
+💡 Remove unused setState or prefix with underscore if planned for future.
+
+---
+
+**Warning 3: Missing Return Type**
+```
+
+src/utils/markdown.ts:12:1 - Missing return type on function
+
+```
+
+📖 [TypeScript ESLint: explicit-function-return-type](https://typescript-eslint.io/rules/explicit-function-return-type/)
+💡 Add explicit return type annotation or configure rule to allow inference.
+
+---
+
+## 📦 Build Artifacts
+
+| File | Size | Gzipped | Status |
+|------|------|---------|--------|
+| index.html | 2.45 KB | - | ✅ |
+| assets/index.css | 45.67 KB | 12.34 KB (73%) | ✅ |
+| assets/index.js | 234.12 KB | 89.45 KB (62%) | ✅ |
+
+**Total:** 282.24 KB → 101.79 KB gzipped (64% reduction)
+
+---
+
+## 🎯 Next Steps
+
+**Before next release:** Clean up 3 ESLint warnings
+**Optional:** Configure auto-fix on save, add pre-commit hooks
+
+## Example 3: CI/CD Pipeline Failure - Focus on Triage
+
+### Context
+
+- **Project:** REST API
+- **Environment:** GitHub Actions CI
+- **Build command:** `npm run ci` (lint → test → build)
+- **Focus:** Show root cause analysis and fix priority
+
+### Generated Report (Abbreviated)
+
+---
+
+# 🔴 CI PIPELINE FAILED
+
+**Pipeline:** GitHub Actions CI (feature/user-management)
+**Commit:** a3f7b92
 **Failed stages:** Lint (3 errors), Test (2 failures)
+
+---
+
+## 📊 Executive Summary
+
+CI blocked at lint stage with 3 TypeScript ESLint errors. Tests also failed (2/25). Root cause: Using `any` type in 2 files + improper test mocks.
+
+**Impact:** ❌ Cannot merge
+**Fix priority:** Lint errors first (blocks tests from running), then test mocks
+**Time estimate:** 20-30 minutes
 
 ---
 
@@ -739,210 +510,90 @@ CI pipeline failed at **lint stage** with 3 ESLint errors. Additional **2 test f
 
 ### 🔴 CRITICAL - ESLint Errors (3 errors)
 
-Linting errors in strict mode block the CI pipeline.
-
-#### Error 1 & 3: No Explicit Any
-
-```
-src/controllers/userController.ts:34:11
-src/services/authService.ts:89:7
-Unexpected any. Specify a different type (@typescript-eslint/no-explicit-any)
+**Error 1 & 3: @typescript-eslint/no-explicit-any**
 ```
 
-**Problem:** Using `any` type defeats TypeScript's type system.
+src/controllers/userController.ts:34:11 - Promise<any>
+src/services/authService.ts:89:7 - validateToken(): any
 
-**Context (userController.ts:34):**
-
-```typescript
-// Line 34
-async createUser(req: Request, res: Response): Promise<any> {
-  //                                                     ^^^
 ```
 
-**Solution:**
+📖 **Official Documentation:**
+- [TypeScript ESLint: no-explicit-any](https://typescript-eslint.io/rules/no-explicit-any/)
+- [TypeScript: Basic Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 
-```typescript
-// ✅ Define proper return type
-interface UserResponse {
-  id: string;
-  username: string;
-  email: string;
-  createdAt: Date;
-}
-
-async createUser(req: Request, res: Response): Promise<UserResponse> {
-  const user = await this.userService.create(req.body);
-  return {
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    createdAt: user.createdAt
-  };
-}
-```
-
-**Context (authService.ts:89):**
-
-```typescript
-// Line 89
-validateToken(token: string): any {
-  //                         ^^^
-}
-```
-
-**Solution:**
-
-```typescript
-// ✅ Define token validation result
-type TokenValidationResult = {
-  valid: boolean;
-  userId?: string;
-  error?: string;
-};
-
-validateToken(token: string): TokenValidationResult {
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    return { valid: true, userId: decoded.userId };
-  } catch (error) {
-    return { valid: false, error: error.message };
-  }
-}
-```
+💡 **Quick hint:** Define proper return types (UserResponse, TokenValidationResult). CI requires explicit types in strict mode.
 
 ---
 
-#### Error 2: Unused Variable
-
-```
-src/controllers/userController.ts:56:5
-'id' is defined but never used (@typescript-eslint/no-unused-vars)
+**Error 2: @typescript-eslint/no-unused-vars**
 ```
 
-**Context:**
+src/controllers/userController.ts:56:5 - 'id' is defined but never used
 
-```typescript
-// Line 56
-const id = req.params.id;
-// id is extracted but never used
 ```
 
-**Solution:**
-
-```typescript
-// ✅ Use the variable
-const id = req.params.id;
-const user = await this.userService.findById(id);
-
-// Or remove if not needed
-// const id = req.params.id;  // Remove this line
-```
+📖 [TypeScript ESLint: no-unused-vars](https://typescript-eslint.io/rules/no-unused-vars/)
+💡 Either use the `id` variable or remove it.
 
 ---
 
-### 🔴 CRITICAL - Test Failures (2 failures)
+### 🔴 CRITICAL - Test Failures (2/25 failed)
 
-#### Test Failure 1: Assertion Failed
-
-```
-src/services/authService.test.ts:91
-AuthService › should validate token
-expect(received).toBe(expected)
-Expected: true
-Received: false
+**Test 1: Assert Failed - authService.test.ts:91**
 ```
 
-**Problem:** `validateToken()` returns `false` for valid token in test.
+expect(result).toBe(true) // Got: false
 
-**Root cause analysis:**
-
-```typescript
-// Test code
-it("should validate token", () => {
-	const result = authService.validateToken("valid-token");
-	expect(result).toBe(true); // Fails
-});
 ```
 
-**Likely issues:**
+📖 **Official Documentation:**
+- [Jest: Expect API](https://jestjs.io/docs/expect)
+- [JWT: Testing Strategies](https://jwt.io/#debugger-io)
 
-1. Test token isn't actually valid
-2. Test expects boolean but function returns object
-3. Secret key mismatch in test environment
-
-**Solution:**
-
-```typescript
-// ✅ Fix test setup
-import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../config";
-
-describe("AuthService", () => {
-	let authService: AuthService;
-	let validToken: string;
-
-	beforeEach(() => {
-		authService = new AuthService();
-		// Generate actual valid token for tests
-		validToken = jwt.sign({ userId: "123" }, SECRET_KEY);
-	});
-
-	it("should validate token", () => {
-		const result = authService.validateToken(validToken);
-		expect(result.valid).toBe(true); // Fixed: check .valid property
-		expect(result.userId).toBe("123");
-	});
-});
-```
+💡 **Quick hint:** Test expects boolean but validateToken returns object. Check return type and update assertion or generate valid JWT token for tests.
 
 ---
 
-#### Test Failure 2: TypeError
-
-```
-src/controllers/userController.test.ts:47
-UserController › should create user
-TypeError: Cannot read property 'create' of undefined
+**Test 2: TypeError - userController.test.ts:47**
 ```
 
-**Problem:** `userService.create()` is `undefined`, mock not set up correctly.
+Cannot read property 'create' of undefined
 
-**Solution:**
+````
 
-```typescript
-// ✅ Fix mock setup
-describe("UserController", () => {
-	let userController: UserController;
-	let mockUserService: jest.Mocked<UserService>;
+📖 **Official Documentation:**
+- [Jest: Mock Functions](https://jestjs.io/docs/mock-functions)
+- [Jest: ES6 Class Mocks](https://jestjs.io/docs/es6-class-mocks)
 
-	beforeEach(() => {
-		// Properly mock the service
-		mockUserService = {
-			create: jest.fn().mockResolvedValue({
-				id: "1",
-				username: "testuser",
-				email: "test@example.com",
-				createdAt: new Date(),
-			}),
-			findById: jest.fn(),
-			// ... other methods
-		} as any;
+💡 **Quick hint:** Mock not properly initialized. Ensure userService.create is mocked in beforeEach. See Jest mocking patterns in docs.
 
-		userController = new UserController(mockUserService);
-	});
+---
 
-	it("should create user", async () => {
-		const mockRequest = {
-			body: { username: "testuser", email: "test@example.com" },
-		} as Request;
+## 🎯 Next Steps
 
-		const user = await userController.createUser(mockRequest);
+### Fix Lint Errors First (blocks CI)
 
-		expect(user).toBeDefined();
-		expect(mockUserService.create).toHaveBeenCalledWith(mockRequest.body);
-	});
-});
-```
+**Step 1:** Replace `any` types with proper interfaces
+- userController.ts:34 → Define UserResponse type
+- authService.ts:89 → Define TokenValidationResult type
+📖 [TypeScript: Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html)
+
+**Step 2:** Fix or remove unused `id` variable
+
+### Then Fix Tests
+
+**Step 3:** Fix authService test - update assertion or return type
+**Step 4:** Fix userController test - properly mock userService.create
+📖 [Jest: Setup and Teardown](https://jestjs.io/docs/setup-teardown)
+
+### Verify
+
+```bash
+npm run ci  # Run full pipeline locally before pushing
+````
+
+📖 [GitHub Actions: Node.js CI](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
 
 ---
 
@@ -997,291 +648,159 @@ describe("UserController", () => {
 - [Jest: Mocking Functions](https://jestjs.io/docs/mock-functions)
 - [GitHub Actions: Node.js CI](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
 
----
-
-_Generated by build-report skill • 15 Jan 2024 16:20_
-
----
-
-## Example 4: Mixed Tool Failures
+## Example 4: Cross-Tool Error Analysis - Show Pattern Recognition
 
 ### Context
 
 - **Project:** Dashboard app
-- **Tools:** TypeScript + Webpack + ESLint + Sass
-- **Complex:** Multiple overlapping errors
+- **Tools:** TypeScript, Webpack, Sass, ESLint
+- **Focus:** Show how to analyze errors across multiple tools and find root cause
 
-### Build Output (Raw)
-
-```
-> dashboard@1.5.0 build
-> webpack --mode production
-
-Hash: 3f8b9c7d2a1e4f6g
-Version: webpack 5.89.0
-Time: 8943ms
-
-ERROR in ./src/types/chart.ts
-Module build failed (from ./node_modules/ts-loader/index.js):
-error TS2307: Cannot find module './Chart' or its corresponding type declarations.
-
-ERROR in ./src/components/Dashboard.tsx
-Module build failed (from ./node_modules/ts-loader/index.js):
-error TS2339: Property 'data' does not exist on type 'ChartProps'.
-
-ERROR in ./src/styles/main.scss
-Module build failed (from ./node_modules/sass-loader/dist/cjs.js):
-SassError: Expected expression.
-   ╷
-45 │   color: $primary-;
-   │                   ^
-   ╵
-  src/styles/_variables.scss 45:19  @import
-  src/styles/main.scss 2:9          root stylesheet
-
-./src/components/Sidebar.tsx
-  23:10  error  'useCallback' is defined but never used  react-hooks/exhaustive-deps
-
-webpack 5.89.0 compiled with 4 errors and 1 warning in 8943ms
-```
-
-### Generated Report
+### Generated Report (Abbreviated)
 
 ---
 
-# 🔴 BUILD FAILED - Multiple Tool Errors
+# 🔴 BUILD FAILED - Cross-Tool Errors
 
-**Project:** Dashboard  
-**Build command:** `webpack --mode production`  
-**Duration:** 8.9 seconds  
-**Tools:** TypeScript, Webpack, Sass, ESLint
+**Tools affected:** TypeScript (2), Sass (1), ESLint (1)  
+**Build time:** 8.9s  
+**Root cause:** File rename incomplete + typo in Sass variable
 
 ---
 
 ## 📊 Executive Summary
 
-Build failed with **4 errors** across multiple tools (TypeScript, Sass) and **1 warning** from ESLint. Issues span module resolution, type definitions, and stylesheet syntax.
+Build failed with 4 errors across 3 different tools. Analysis shows 2 simple fixes will resolve 75% of issues: case-sensitive import mismatch and incomplete Sass variable name.
 
-**Primary cause:** Incomplete file rename (Chart → chart) and Sass variable typo.  
-**Estimated fix time:** 10 minutes
-
----
-
-## ❌ Errors
-
-### 🔴 CRITICAL - Module Resolution (1 error)
-
-#### Error 1: Cannot Find Module './Chart'
-
-```
-src/types/chart.ts
-Module build failed: Cannot find module './Chart' or its corresponding type declarations (TS2307)
-```
-
-**Problem:** Case-sensitive import mismatch. File is `chart.ts` but importing `Chart`.
-
-**Solution:**
-
-```typescript
-// ❌ Wrong case
-import { ChartConfig } from "./Chart";
-
-// ✅ Fix: Match actual filename
-import { ChartConfig } from "./chart";
-```
-
-**Prevention:** Enable case-sensitive paths in webpack:
-
-```javascript
-// webpack.config.js
-module.exports = {
-	resolve: {
-		// Force case-sensitive paths
-		extensions: [".ts", ".tsx", ".js"],
-	},
-};
-```
+**Quick wins:** Fix imports and Sass typo (2 minutes) → remaining errors likely resolve automatically.
 
 ---
 
-### 🔴 CRITICAL - Type Error (1 error)
+## ❌ Errors (Grouped by Root Cause)
 
-#### Error 2: Property Does Not Exist
+### Group 1: File System Issues (2 errors)
+
+**Error 1: TS2307 - Module Not Found**
 
 ```
-src/components/Dashboard.tsx
-Property 'data' does not exist on type 'ChartProps' (TS2339)
+src/types/chart.ts - Cannot find module './Chart'
 ```
 
-**Problem:** `ChartProps` interface doesn't include `data` property.
+**Error 2: TS2339 - Property Missing**
 
-**Solution:**
-
-```typescript
-// Current ChartProps (incomplete)
-interface ChartProps {
-	title: string;
-	type: "line" | "bar";
-	// 'data' is missing
-}
-
-// ✅ Add missing property
-interface ChartProps {
-	title: string;
-	type: "line" | "bar";
-	data: Array<{
-		label: string;
-		value: number;
-	}>;
-}
 ```
+src/components/Dashboard.tsx - Property 'data' does not exist on ChartProps
+```
+
+📖 **Official Documentation:**
+
+- [TypeScript: Module Resolution](https://www.typescriptlang.org/docs/handbook/module-resolution.html)
+- [TypeScript: Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
+
+💡 **Root cause:** File renamed from `Chart.ts` to `chart.ts` but imports not updated. Error 2 likely cascades from Error 1 - fix import first.
 
 ---
 
-### 🔴 CRITICAL - Sass Syntax Error (1 error)
+### Group 2: Stylesheet Issues (1 error)
 
-#### Error 3: Sass Expected Expression
+**Error 3: Sass Syntax Error**
 
 ```
-src/styles/_variables.scss:45:19
-SassError: Expected expression
-color: $primary-;
-                ^
+_variables.scss:45 - Expected expression: color: $primary-;
 ```
 
-**Problem:** Incomplete Sass variable name `$primary-` (trailing hyphen).
+📖 **Official Documentation:**
 
-**Solution:**
+- [Sass: Variables](https://sass-lang.com/documentation/variables)
+- [Sass: Syntax](https://sass-lang.com/documentation/syntax)
 
-```scss
-// ❌ Incomplete variable
-.button {
-	color: $primary-; // Typo: ends with hyphen
-}
-
-// ✅ Fix: Complete variable name
-.button {
-	color: $primary-color; // or just $primary
-}
-```
-
-**Check \_variables.scss:**
-
-```scss
-// Ensure variable is defined
-$primary-color: #007bff;
-$secondary-color: #6c757d;
-```
+💡 **Quick hint:** Incomplete variable name (trailing hyphen). Complete to `$primary-color` or `$primary`. Check variable is defined in same file.
 
 ---
 
-### 🟡 HIGH - React Hook Warning (1 warning)
+### Group 3: Code Quality (1 warning)
 
-#### Warning 1: Unused Hook Import
+**Warning: Unused Import**
 
 ```
-src/components/Sidebar.tsx:23:10
-'useCallback' is defined but never used (react-hooks/exhaustive-deps)
+Sidebar.tsx:23 - 'useCallback' is defined but never used
 ```
 
-**Solution:**
-
-```typescript
-// ❌ Imported but not used
-import { useState, useEffect, useCallback } from "react";
-//                             ^^^^^^^^^^^ Not used
-
-// ✅ Remove unused import
-import { useState, useEffect } from "react";
-```
+📖 [ESLint: no-unused-vars](https://eslint.org/docs/latest/rules/no-unused-vars)  
+💡 Remove unused import after fixing critical errors.
 
 ---
 
-## 📈 Build Metrics
+## 🎯 Next Steps (Priority Order)
 
-| Metric     | Value          | Status  |
-| ---------- | -------------- | ------- |
-| Errors     | 4              | 🔴      |
-| Warnings   | 1              | 🟡      |
-| Build time | 8.9s           | 🟡 Slow |
-| Compiler   | Webpack 5.89.0 | ✅      |
+**1st:** Fix import case `./Chart` → `./chart` (may auto-resolve Error 2)  
+**2nd:** Fix Sass variable `$primary-` → `$primary-color`  
+**3rd:** Verify ChartProps still has missing property (might be resolved)  
+**4th:** Clean up unused imports
 
----
-
-## 🎯 Next Steps
-
-### Critical Fixes (Required)
-
-1. ✅ **Fix import case** in [chart.ts](src/types/chart.ts)
-   - Change `'./Chart'` to `'./chart'`
-2. ✅ **Add `data` property** to `ChartProps` interface
-   - Define data structure in types file
-
-3. ✅ **Fix Sass variable** in [\_variables.scss](src/styles/_variables.scss#L45)
-   - Complete `$primary-` to `$primary-color`
-
-### Quality Improvements
-
-4. 🟢 **Remove unused import** in Sidebar.tsx
-5. 📝 **Add ESLint rule** to catch unused React hooks
-6. 📝 **Investigate slow build** (8.9s is high for this project size)
+📖 [Webpack: Resolve Configuration](https://webpack.js.org/configuration/resolve/)
 
 ---
 
-_Generated by build-report skill • 15 Jan 2024 17:05_
+## Key Insights from Examples
+
+### Pattern 1: Error Cascading
+
+Example 1 and 4 show how one error can cause others:
+
+- Shared package type error → dependent package errors
+- Module import error → type definition errors
+
+**Strategy:** Fix root cause first, re-run build to see what remains.
+
+### Pattern 2: Tool-Specific vs Universal Docs
+
+- **TypeScript/ESLint:** Link to specific error code docs
+- **Webpack/Vite:** Link to concept guides (module resolution, loaders)
+- **Build tools:** Official troubleshooting guides
+
+### Pattern 3: Report Length
+
+- **Build failed:** Longer reports with grouping and priority
+- **Build succeeded with warnings:** Shorter, more encouraging tone
+- **CI failures:** Include git context (branch, commit)
 
 ---
 
-## Report Format Guidelines
+## Report Structure Summary
 
-### When to Include Each Section
+### Required Sections (ALL reports)
 
-**✅ BUILD SUCCEEDED:**
+1. **Header:** Build status, project, command, duration
+2. **Executive Summary:** 2-3 sentences with impact and priority
+3. **Issues:** Grouped errors/warnings with doc links
+4. **Next Steps:** Prioritized action list with doc links
 
-- Executive Summary (brief, celebration)
-- Warnings (if any)
-- Build Artifacts
-- Build Metrics
-- Next Steps (optional improvements)
+### Optional Sections (when relevant)
 
-**🔴 BUILD FAILED:**
+- **Build Metrics:** Error/warning counts, durations, sizes
+- **Build Artifacts:** For successful builds
+- **Dependencies:** When packages need installation/update
+- **Root Cause Analysis:** For complex cascading errors
 
-- Executive Summary (impact assessment)
-- Errors (detailed, with solutions)
-- Warnings (if any, lower priority)
-- Dependencies (if relevant)
-- Build Metrics
-- Next Steps (prioritized fixes)
+---
 
-### Section Priority
+## What NOT to Include in Reports
 
-1. **Always include:**
-   - Build status header
-   - Executive summary
-   - Primary issue section (errors or warnings)
-   - Next steps
+❌ **Specific code solutions** - Link to official docs instead  
+❌ **Multiple fix options** - Let official docs explain alternatives  
+❌ **TypeScript/ESLint concept explanations** - Docs do this better  
+❌ **Configuration file examples** - Link to setup guides  
+❌ **Package installation commands** - Basic, docs cover it
 
-2. **Include when relevant:**
-   - Dependencies (when installation/updates needed)
-   - Build artifacts (successful builds)
-   - Build metrics (always useful)
-   - Resources (for learning)
+---
 
-3. **Optional:**
-   - Configuration suggestions
-   - Performance recommendations
-   - Team collaboration notes
+## What TO Include in Reports
 
-### Tone Guidelines
-
-- **Failed builds:** Helpful, solution-focused, not blaming
-- **Successful builds:** Encouraging, still note improvements
-- **Warnings:** Balanced, explain why they matter
-- **CI failures:** Include context (commit, branch, author impact)
-
-### Length Guidelines
-
-- **Summary:** 2-3 sentences
-- **Error explanation:** 3-5 sentences + code example
-- **Solution:** Code example + 1-2 sentences explanation
-- **Full report:** Enough detail to fix without asking questions
+✅ **Context:** File locations, affected modules, occurrence counts  
+✅ **Root cause analysis:** Why errors are happening  
+✅ **Dependency mapping:** Which errors cause others  
+✅ **Priority guidance:** What to fix first and why  
+✅ **Direct doc links:** Specific to each error code  
+✅ **Quick hints:** 1-sentence summary of what docs will explain  
+✅ **Impact assessment:** Deployment status, time estimates

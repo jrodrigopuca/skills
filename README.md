@@ -43,16 +43,17 @@ Escribe commits siguiendo Conventional Commits con tipos estándar, scopes, brea
 
 **Generador de reportes estructurados de builds Node.js**
 
-Analiza outputs de compilación (TypeScript, ESLint, Webpack, Vite) y genera reportes estructurados con diagnóstico, soluciones y priorización automática de errores.
+Analiza outputs de compilación (TypeScript, ESLint, Webpack, Vite) y genera reportes con diagnóstico, priorización y enlaces a documentación oficial para resolución.
 
 - ✅ Soporte para TypeScript, ESLint, Webpack, Vite
-- ✅ Parseo automático de errores con regex
-- ✅ Agrupación por patrones similares
-- ✅ Base de datos de 100+ soluciones
-- ✅ Priorización con emojis 🔴 🟡 🟢
-- ✅ Reportes en 7 secciones (Status, Summary, Errors, Warnings, Dependencies, Metrics, Next Steps)
+- ✅ Parseo automático con regex patterns
+- ✅ Agrupación por patrones y root cause
+- ✅ Priorización automática (🔴 🟡 🟢 ⚪)
+- ✅ Enlaces a documentación oficial (no duplica soluciones)
+- ✅ Análisis de dependencias entre errores
+- ✅ Executive summary para triage rápido
 - 📄 **Idioma:** Bilingüe (English | Español)
-- 📊 **Tamaño:** ~3,100 líneas
+- 📊 **Tamaño:** ~2,600 líneas
 
 **Activadores:** "analyze build output", "parse build errors", "build report", "analizar errores de compilación"
 
@@ -223,11 +224,14 @@ Las contribuciones son bienvenidas! Para añadir una nueva skill:
 
 Estas skills llenan vacíos en el ecosistema:
 
-| Skill            | Estado en Ecosistema | Nuestro Enfoque                                    |
-| ---------------- | -------------------- | -------------------------------------------------- |
-| **using-jsdoc**  | ❌ No existe         | Referencia completa de JSDoc con 50+ tags          |
-| **using-commit** | ❌ No existe         | Conventional Commits con JIRA + español            |
-| **build-report** | ❌ No existe         | Analizador universal de builds con 100+ soluciones |
+| Skill            | Estado en Ecosistema | Nuestro Enfoque                                          |
+| ---------------- | -------------------- | -------------------------------------------------------- |
+| **using-jsdoc**  | ❌ No existe         | Referencia completa de JSDoc con 50+ tags                |
+| **using-commit** | ❌ No existe         | Conventional Commits con JIRA + español                  |
+| **build-report** | ❌ No existe         | Triage y análisis de builds - complementa docs oficiales |
+
+**Filosofía de build-report:**  
+No duplica documentación oficial de TypeScript/ESLint/Webpack. Se enfoca en **parsing, agrupación, priorización y enlaces** a docs oficiales.
 
 ## 📝 Licencia
 

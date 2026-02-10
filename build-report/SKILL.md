@@ -10,16 +10,16 @@ Generate structured, actionable reports from build outputs for Node.js projects.
 
 ## Overview
 
-Build Report is an AI agent skill that transforms raw build outputs (TypeScript, ESLint, Webpack, Vite, etc.) into organized, prioritized reports with:
+Build Report transforms raw build outputs into organized, prioritized reports. Instead of duplicating official documentation, this skill focuses on:
 
-- Grouped errors and warnings by pattern and type
-- Prioritized issues (Critical → High → Medium → Low)
-- Documented solutions with links to official docs
-- File locations and affected modules
-- Actionable next steps with commands
-- Comparison with previous builds (optional)
+- **Parsing and extracting** errors from multiple tools (TypeScript, ESLint, Webpack, Vite)
+- **Grouping** similar errors by pattern and root cause
+- **Prioritizing** issues by impact and severity
+- **Analyzing dependencies** between errors (what to fix first)
+- **Linking to official docs** for detailed solutions
+- **Executive summary** for quick decision making
 
-This skill helps developers quickly understand build failures, prioritize fixes, and find solutions without searching through hundreds of lines of raw output.
+This skill complements (not replaces) official documentation by providing triage, context, and actionable next steps.
 
 ## Prerequisites
 
@@ -721,12 +721,14 @@ npm run build
 
 ## Resources
 
+**Official Documentation (primary source for solutions):**
 - [TypeScript Error Reference](https://www.typescriptlang.org/docs/handbook/error-reference.html) - Official TS error codes
 - [ESLint Rules](https://eslint.org/docs/latest/rules/) - Complete ESLint rules documentation
 - [Webpack Errors](https://webpack.js.org/configuration/stats/#errors-and-warnings) - Webpack error handling
 - [Vite Error Reference](https://vitejs.dev/guide/troubleshooting.html) - Vite common errors
-- [TypeScript Performance](https://github.com/microsoft/TypeScript/wiki/Performance) - Optimize TypeScript builds
-- [references/nodejs-parsers.md](references/nodejs-parsers.md) - Detailed parsing strategies for Node.js tools
-- [references/solutions-database.md](references/solutions-database.md) - Complete error code solutions database
-- [references/report-examples.md](references/report-examples.md) - More complete report examples
+
+**Skill References:**
+- [references/nodejs-parsers.md](references/nodejs-parsers.md) - Parsing strategies for Node.js build tools
+- [references/error-docs-map.md](references/error-docs-map.md) - Error code → official docs mapping
+- [references/report-examples.md](references/report-examples.md) - Complete report examples
 ```
