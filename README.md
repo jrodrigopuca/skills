@@ -1,3 +1,13 @@
-# skills
+# Skills Collection
 
-A repository of capabilities designed for AI-powered coding assistants. These packaged solutions combine instructions and executable scripts to enhance and expand agent functionality.
+Collection of reusable AI agent skills.
+
+## Skills
+
+- [using-jsdoc](skills/using-jsdoc/) - JSDoc documentation guide for JavaScript and TypeScript
+
+## Installation
+
+```bash
+npx skills add jrodrigopuca/skills
+```
