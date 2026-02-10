@@ -1,6 +1,6 @@
 # 🤖 Agent Skills Collection
 
-Colección de skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
+Colección de 3 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
 
 ## 📚 Skills Disponibles
 
@@ -39,6 +39,25 @@ Escribe commits siguiendo Conventional Commits con tipos estándar, scopes, brea
 
 ---
 
+### [build-report](build-report/)
+
+**Generador de reportes estructurados de builds Node.js**
+
+Analiza outputs de compilación (TypeScript, ESLint, Webpack, Vite) y genera reportes estructurados con diagnóstico, soluciones y priorización automática de errores.
+
+- ✅ Soporte para TypeScript, ESLint, Webpack, Vite
+- ✅ Parseo automático de errores con regex
+- ✅ Agrupación por patrones similares
+- ✅ Base de datos de 100+ soluciones
+- ✅ Priorización con emojis 🔴 🟡 🟢
+- ✅ Reportes en 7 secciones (Status, Summary, Errors, Warnings, Dependencies, Metrics, Next Steps)
+- 📄 **Idioma:** Bilingüe (English | Español)
+- 📊 **Tamaño:** ~3,100 líneas
+
+**Activadores:** "analyze build output", "parse build errors", "build report", "analizar errores de compilación"
+
+---
+
 ## 🚀 Instalación
 
 ### Opción 1: Instalar todas las skills
@@ -55,6 +74,9 @@ npx skills add https://github.com/jrodrigopuca/skills --skill using-jsdoc
 
 # Conventional Commits skill
 npx skills add https://github.com/jrodrigopuca/skills --skill using-commit
+
+# Build Report skill
+npx skills add https://github.com/jrodrigopuca/skills --skill build-report
 ```
 
 ### Opción 3: Clonar repositorio
@@ -66,6 +88,7 @@ cd skills
 # Copiar a tu directorio de skills
 cp -r using-jsdoc ~/.agents/skills/
 cp -r using-commit ~/.agents/skills/
+cp -r build-report ~/.agents/skills/
 ```
 
 ## 💡 Uso
@@ -111,6 +134,36 @@ Incluye manejo de tokens y refresh automático.
 
 JIRA: AUTH-123
 Closes #456"
+```
+
+### Ejemplos con build-report
+
+```bash
+# Pregunta al agente:
+# "Analyze this build output and create a report"
+
+npm run build 2>&1 | pbcopy  # Copia el output
+
+# El agente usará la skill y generará:
+# ================================
+# 🔴 BUILD FAILED
+#
+# 📊 Executive Summary
+# Build failed with 3 critical TypeScript errors and 2 ESLint warnings.
+#
+# ❌ Errors
+#
+# Error 1: TS2345 - Type Mismatch
+# src/utils/helper.ts:23:15
+# Argument of type 'string' is not assignable to parameter of type 'number'
+#
+# Solution:
+# [Code example with fix]
+#
+# 🎯 Next Steps
+# 1. ✅ Fix type conversion in helper.ts line 23
+# 2. ✅ Install missing @types/node package
+# ...
 ```
 
 ## 📖 Estructura de Skills
@@ -170,10 +223,11 @@ Las contribuciones son bienvenidas! Para añadir una nueva skill:
 
 Estas skills llenan vacíos en el ecosistema:
 
-| Skill            | Estado en Ecosistema | Nuestro Enfoque                           |
-| ---------------- | -------------------- | ----------------------------------------- |
-| **using-jsdoc**  | ❌ No existe         | Referencia completa de JSDoc con 50+ tags |
-| **using-commit** | ❌ No existe         | Conventional Commits con JIRA + español   |
+| Skill            | Estado en Ecosistema | Nuestro Enfoque                                    |
+| ---------------- | -------------------- | -------------------------------------------------- |
+| **using-jsdoc**  | ❌ No existe         | Referencia completa de JSDoc con 50+ tags          |
+| **using-commit** | ❌ No existe         | Conventional Commits con JIRA + español            |
+| **build-report** | ❌ No existe         | Analizador universal de builds con 100+ soluciones |
 
 ## 📝 Licencia
 
