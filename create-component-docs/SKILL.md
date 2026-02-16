@@ -92,7 +92,7 @@ Document internal structure using Mermaid diagrams:
 
 **Component hierarchy:**
 
-````markdown
+```markdown
 ## Architecture
 
 ​`mermaid
@@ -104,11 +104,11 @@ graph TD
     E --> F[TableCell]
     A --> G[Pagination]
 ​`
-````
+```
 
 **State flow (for stateful components):**
 
-````markdown
+```markdown
 ## State Flow
 
 ​`mermaid
@@ -120,7 +120,7 @@ stateDiagram-v2
     Success --> Idle: reset()
     Error --> Loading: retry()
 ​`
-````
+```
 
 **Official documentation:**
 
