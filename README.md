@@ -1,6 +1,6 @@
 # 🤖 Agent Skills Collection
 
-Colección de 3 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
+Colección de 4 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
 
 ## 📚 Skills Disponibles
 
@@ -59,6 +59,24 @@ Analiza outputs de compilación (TypeScript, ESLint, Webpack, Vite) y genera rep
 
 ---
 
+### [create-component-docs](create-component-docs/)
+
+**Generador de documentación de componentes UI**
+
+Crea documentación completa de componentes incluyendo arquitectura, API/props, ejemplos de uso, issues conocidos y diagramas de flujo. Compatible con React, Vue, Angular y Web Components.
+
+- ✅ Templates listos para copiar
+- ✅ Formato estándar de props/API
+- ✅ Diagramas Mermaid para arquitectura
+- ✅ Formato de known issues con severidad
+- ✅ Enlaces a documentación oficial (no duplica contenido)
+- 📄 **Idioma:** Bilingüe (English | Español)
+- 📊 **Tamaño:** ~500 líneas
+
+**Activadores:** "document component", "component documentation", "documentar componente", "documentación de componente"
+
+---
+
 ## 🚀 Instalación
 
 ### Opción 1: Instalar todas las skills
@@ -78,6 +96,9 @@ npx skills add https://github.com/jrodrigopuca/skills --skill using-commit
 
 # Build Report skill
 npx skills add https://github.com/jrodrigopuca/skills --skill build-report
+
+# Component Docs skill
+npx skills add https://github.com/jrodrigopuca/skills --skill create-component-docs
 ```
 
 ### Opción 3: Clonar repositorio
@@ -90,6 +111,7 @@ cd skills
 cp -r using-jsdoc ~/.agents/skills/
 cp -r using-commit ~/.agents/skills/
 cp -r build-report ~/.agents/skills/
+cp -r create-component-docs ~/.agents/skills/
 ```
 
 ## 💡 Uso
