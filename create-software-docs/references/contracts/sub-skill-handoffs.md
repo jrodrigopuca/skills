@@ -8,11 +8,12 @@ Keep artifact names stable across the documentation workflow so that each sub-sk
 
 ## Structure of This Contract
 
-This contract is organized in three layers:
+This contract is organized in three operational layers plus an examples appendix:
 
 1. reusable artifact shapes shared across sub-skills
 2. top-level artifacts produced by each sub-skill stage
 3. escalation and flow rules that explain how items move through the pipeline
+4. examples appendix for canonical reference shapes and mappings
 
 ## 1. Reusable Artifact Shapes
 

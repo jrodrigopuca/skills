@@ -124,18 +124,18 @@ If cleanup or known-issues generation performs meaningful edits, run `validate-g
 
 Use the shared handoff contract to coordinate the workflow:
 
-- consume the scope analysis artifact from `analyze-project-scope`
+- consume the `Scope Analysis Artifact` from `analyze-project-scope`
 - pass scope, evidence, and planning data into document-producing sub-skills
-- pass generated document outputs into `validate-generated-docs`
-- pass validation findings into `cleanup-and-review-docs`
-- pass validation and cleanup findings into `create-known-issues` when persistent issues remain worth tracking
-- request a final validation pass when cleanup reports meaningful edits
+- pass `Document Generation Artifact` outputs into `validate-generated-docs`
+- pass the `Validation Artifact` into `cleanup-and-review-docs`
+- pass the `Validation Artifact` and `Cleanup Artifact` into `create-known-issues` when persistent issues remain worth tracking
+- request a final validation pass when cleanup or known-issues generation reports meaningful edits
 
 When coordinating `knownIssueCandidates`, apply this boundary:
 
 - keep ordinary validation findings in validation output if they do not need long-term tracking
 - keep editorial or easy structural fixes in cleanup work when they can be resolved in the same pass
-- send only persistent, evidence-backed, track-worthy issues into `create-known-issues`
+- send only persistent, evidence-backed, track-worthy issues into `create-known-issues` as input for the `Known Issues Document Artifact`
 
 ### 4. Update Scope README
 
@@ -228,5 +228,7 @@ Before finalizing, verify:
 - [ ] runbook commands are evidenced by repository artifacts
 - [ ] README links point to generated docs inside the selected scope
 - [ ] the validation sub-skill has been run
+- [ ] the validation artifact is specific enough to drive cleanup and re-validation
 - [ ] cleanup and review has been completed for deliverable documentation
+- [ ] cleanup output makes unresolved items and follow-up actions explicit when they remain
 - [ ] known issues were documented when unresolved or accepted limitations remain

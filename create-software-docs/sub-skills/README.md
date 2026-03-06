@@ -2,6 +2,15 @@
 
 This folder contains the specialized skills used by the `create-software-docs` orchestrator.
 
+## Structure of This Index
+
+This index summarizes:
+
+1. execution order
+2. sub-skill roles
+3. main artifacts exchanged through the pipeline
+4. shared contracts that keep the workflow consistent
+
 ## Execution Order
 
 1. `analyze-project-scope`
@@ -18,6 +27,78 @@ This folder contains the specialized skills used by the `create-software-docs` o
 12. conditional: `create-known-issues`
 
 If cleanup or known-issues generation performs substantial edits, run `validate-generated-docs` again as a final pass.
+
+## Sub-skill Roles
+
+### Scope Analysis
+
+- `analyze-project-scope`
+  - resolves `{scope}`
+  - identifies evidence sources
+  - decides which docs should be generated
+  - produces the `Scope Analysis Artifact`
+
+### Document Generation
+
+- `create-project-overview`
+- `create-architecture-docs`
+- `create-development-guide`
+- `create-data-model-docs`
+- `create-api-docs`
+- `create-runbooks`
+- `create-glossary`
+- `create-adrs`
+
+These sub-skills generate final documentation files and produce `Document Generation Artifact` outputs.
+
+### Known-Issue Documentation
+
+- `create-known-issues`
+
+This sub-skill generates the final known-issues document and produces the `Known Issues Document Artifact`.
+
+### Validation
+
+- `validate-generated-docs`
+  - validates generated docs against scope, evidence, links, and consistency rules
+  - produces the `Validation Artifact`
+  - emits structured fields such as `filesChecked`, `issuesFound`, `brokenLinks`, `missingEvidenceNotes`, `speculativeSections`, `cleanupCandidates`, and `knownIssueCandidates`
+
+### Cleanup and Review
+
+- `cleanup-and-review-docs`
+  - applies safe editorial cleanup
+  - resolves or escalates cleanup candidates
+  - produces the `Cleanup Artifact`
+  - emits structured `remainingIssues` and surviving `knownIssueCandidates`
+
+## Artifact Pipeline Summary
+
+The main handoff flow is:
+
+1. `analyze-project-scope` → `Scope Analysis Artifact`
+2. document-producing sub-skills → `Document Generation Artifact`
+3. `validate-generated-docs` → `Validation Artifact`
+4. `cleanup-and-review-docs` → `Cleanup Artifact`
+5. `create-known-issues` → `Known Issues Document Artifact` when applicable
+
+## Typed Artifact Highlights
+
+The shared handoff contract also defines reusable structured items used inside those artifacts, including:
+
+- `Evidence Reference`
+- `File Check Entry`
+- `Validation Finding`
+- `Broken Link Entry`
+- `Missing Evidence Note`
+- `Speculative Section Entry`
+- `Cleanup Candidate`
+- `Remaining Issue`
+- `Known Issue Candidate`
+
+These reusable shapes should keep naming and escalation behavior consistent across the orchestrator, validation, cleanup, and known-issues stages.
+
+Use those shared shapes instead of free-form lists whenever the sub-skill output is intended for downstream consumption.
 
 ## Reference Contract
 
@@ -37,6 +118,8 @@ Local rule files and checklist files should follow the shared contract in `../re
 
 Artifact exchanges between sub-skills should align with the shared handoff contract in `../references/contracts/sub-skill-handoffs.md`.
 
+When a sub-skill emits structured findings, prefer the canonical artifact names and shapes from that contract over local ad hoc lists.
+
 ## Purpose
 
 - use smaller, specialized prompts
@@ -45,3 +128,4 @@ Artifact exchanges between sub-skills should align with the shared handoff contr
 - keep validation independent from generation
 - keep editorial cleanup separate from structural validation
 - keep analysis, validation, and cleanup on a shared process contract
+- keep artifact exchange typed and predictable for downstream sub-skills
