@@ -1,252 +1,189 @@
 ---
 name: create-software-docs
-description: Generate project-level documentation from codebase analysis — architecture with Mermaid diagrams, ADRs, runbooks, development guides, and more. Technology agnostic. | Genera documentación a nivel de proyecto desde el análisis del código — arquitectura con diagramas Mermaid, ADRs, runbooks, guías de desarrollo y más. Agnóstico de tecnología.
+description: Orchestrate project documentation generation from codebase analysis using specialized sub-skills for scope analysis, architecture, development guides, ADRs, runbooks, APIs, data models, glossary, and validation. | Orquesta la generación de documentación de proyecto desde el análisis del código usando sub-skills especializadas para alcance, arquitectura, guía de desarrollo, ADRs, runbooks, API, modelo de datos, glosario y validación.
 license: MIT
 ---
 
-# Software Project Documentation Generator
+# Software Project Documentation Orchestrator
 
-Generate structured project documentation by analyzing the codebase.
+Generate structured project documentation by coordinating specialized documentation sub-skills.
 
 ## Overview
 
-This skill directs the creation of project-level documentation:
+This skill is the **orchestrator** for project documentation. It does not try to author every document directly. Instead, it:
 
-- **Architecture** with Mermaid diagrams (C4-style)
-- **Decision records** (ADRs) with context and rationale
-- **Runbooks** for operations and incident response
-- **Development guide**, data model, API reference, and more
+1. resolves the documentation `{scope}`
+2. gathers shared evidence
+3. decides which sub-skills are applicable
+4. executes them in the right order
+5. consolidates output under `{scope}/docs/`
+6. validates consistency before finishing
 
-The agent infers content from the codebase — config files, directory structure, code patterns, and existing docs. All output goes into a `{scope}/docs/` folder as Markdown files, where `{scope}` is the repository root or the selected app/package/service root.
+The orchestrator is responsible for hierarchy, activation order, and global quality rules.
 
-## Prerequisites
+## Output Convention
 
-- Access to the project source code
-- Existing project with identifiable structure (not an empty repo)
+All generated files must live under `{scope}/docs/`, where `{scope}` is:
+
+- the repository root for a single-project repo
+- the selected app root in a monorepo
+- the selected package root in a monorepo
+- the selected service root in a multi-service repository
+
+Never write documentation outside the selected `{scope}`.
+
+## Available Sub-skills
+
+Use these sub-skills as building blocks:
+
+- `sub-skills/analyze-project-scope/`
+- `sub-skills/create-project-overview/`
+- `sub-skills/create-architecture-docs/`
+- `sub-skills/create-development-guide/`
+- `sub-skills/create-adrs/`
+- `sub-skills/create-runbooks/`
+- `sub-skills/create-data-model-docs/`
+- `sub-skills/create-api-docs/`
+- `sub-skills/create-glossary/`
+- `sub-skills/validate-generated-docs/`
 
 ## Operating Rules
 
-These rules are mandatory:
+These rules are mandatory across all sub-skills:
 
 1. **Do not invent facts.** Only document behavior, structure, commands, integrations, and architecture that are directly observable in the repository.
-2. **Differentiate evidence from inference.** When something is reconstructed indirectly, label it as **Inferred**. If confidence is low, label it as **Needs confirmation**.
-3. **Leave explicit placeholders when evidence is missing.** Use `TODO:` or `Needs confirmation:` instead of filling gaps with guesses.
-4. **Cite repository evidence.** Every generated document should include a short **Sources inspected** section listing the main files, directories, configs, or scripts used to produce it.
-5. **Preserve project scope.** If the repository is a monorepo or only part of a system is present, state the scope being documented (for example: whole repo, one service, one package, one app).
-6. **Prefer omission over speculation.** If a section is not supported by evidence, omit it or mark it clearly as not yet documented.
+2. **Differentiate evidence from inference.** Mark reconstructed statements as **Inferred**. Mark low-confidence statements as **Needs confirmation**.
+3. **Prefer omission over speculation.** If a section is unsupported, omit it or mark it explicitly.
+4. **Cite repository evidence.** Every generated document must include a short **Sources inspected** section.
+5. **Respect scope boundaries.** Do not mix evidence from outside the selected `{scope}` unless you clearly label it as external context.
+6. **Keep cross-document consistency.** Names, modules, diagrams, and paths must agree across all docs.
+7. **Validate before finishing.** Always run the validation sub-skill after generation.
 
-## Instructions
+## Orchestrator Workflow
 
-### 1. Define Scope First
+### 1. Resolve Scope
 
-Before writing documentation, determine the documentation scope:
+Call `sub-skills/analyze-project-scope/` first.
 
-- **Single-project repo** — document the whole repository
-- **Monorepo** — identify whether the target is the whole repo, one app, one package, or one service
-- **Partial repository** — explicitly state what is missing and what cannot be verified
+The scope analysis must determine:
 
-Write this scope at the top of `project-overview.md` and `architecture.md`.
+- scope root
+- scope type: repository, app, package, or service
+- project complexity: simple, medium, or complex
+- main technologies
+- major modules and entry points
+- evidence inventory
+- applicable document types
 
-### 2. Analyze the Project
+If the repository is partial, document the missing context explicitly.
 
-Scan the codebase to understand:
+### 2. Build the Generation Plan
 
-- **Languages and frameworks** — detect from config/manifest files
-- **Project structure** — major directories, modules, entry points
-- **Data layer** — schema files, migrations, ORM configs
-- **API surface** — routes, controllers, resolvers, endpoints
-- **External integrations** — third-party services, env vars, SDK usage
-- **Build and deploy** — scripts, CI config, Dockerfiles, cloud configs
-- **Existing docs** — README, `{scope}/docs/`, inline comments, wikis
+Based on scope analysis, decide which documents to generate.
 
-This analysis drives which documents to generate and what content goes in each.
+#### Always generate
 
-Capture the evidence you used while analyzing. Reuse that evidence list in the generated documents.
+- `{scope}/docs/project-overview.md`
+- `{scope}/docs/architecture.md`
+- `{scope}/docs/development-guide.md`
 
-### 3. Determine Which Documents to Generate
+#### Generate if applicable
 
-Use this priority matrix — not every project needs every document:
+- `{scope}/docs/decisions/NNN-title.md`
+- `{scope}/docs/runbooks/*.md`
+- `{scope}/docs/data-model.md`
+- `{scope}/docs/api-reference.md`
+- `{scope}/docs/glossary.md`
 
-| Document                   | Always                    | If applicable            |
-| -------------------------- | ------------------------- | ------------------------ |
-| **project-overview.md**    | ✅                        |                          |
-| **architecture.md**        | ✅                        |                          |
-| **development-guide.md**   | ✅                        |                          |
-| **decisions/NNN-title.md** | ✅ (at least retroactive) |                          |
-| **data-model.md**          |                           | Has persistent data      |
-| **runbooks/\*.md**         |                           | Has deployments or ops   |
-| **api-reference.md**       |                           | Exposes an API           |
-| **glossary.md**            |                           | Domain-specific language |
+### 3. Execute Sub-skills in Order
 
-Generate the "Always" documents first. Add others based on what the analysis reveals.
+Use this order unless there is a strong scope-specific reason to change it:
 
-### 4. Generate Project Overview
+1. `analyze-project-scope`
+2. `create-project-overview`
+3. `create-architecture-docs`
+4. `create-development-guide`
+5. `create-data-model-docs` if persistent data exists
+6. `create-api-docs` if an API exists
+7. `create-runbooks` if deployments or operations exist
+8. `create-glossary` if domain language is non-trivial
+9. `create-adrs`
+10. `validate-generated-docs`
 
-Generate `{scope}/docs/project-overview.md` with:
+### 4. Update Scope README
 
-1. **Scope** — what part of the repository is being documented
-2. **Confidence note** — what is confirmed vs inferred
-3. **What the project does** — 1-2 paragraphs, business and technical purpose
-4. **Tech stack** — languages, frameworks, infrastructure (as discovered)
-5. **Repository structure** — annotated directory tree of major folders
-6. **Key modules** — name, purpose, and responsibilities of each
-7. **Links** — point to every other doc in `{scope}/docs/`
-8. **Sources inspected** — files/directories used as evidence
+After generation and validation, add or update a `## Documentation` section in the README that belongs to the selected `{scope}`.
 
-This is the entry point to all documentation. Keep it concise — detail belongs in specialized docs.
+## Activation Rules
 
-See [references/templates.md](references/templates.md) for structure.
+### `analyze-project-scope`
 
-### 5. Generate Architecture Document
+Always run.
 
-Generate `{scope}/docs/architecture.md` with:
+### `create-project-overview`
 
-1. **Scope** — what part of the repository is being documented
-2. **Architecture style** — identify and name the pattern (layered, event-driven, microservices, monolith, serverless, etc.)
-3. **Diagrams** — use Mermaid syntax. Select based on project complexity:
-   - **Simple** (single service) → component diagram + 1-2 sequence diagrams
-   - **Medium** (API + data + frontend) → add system context + data flow
-   - **Complex** (distributed/multi-service) → full C4 set + deployment diagram
-4. **Module descriptions** — for each major module: purpose, responsibilities, key dependencies
-5. **Cross-cutting concerns** — how the project handles auth, logging, error handling, caching, etc.
-6. **Security and operations** — auth boundaries, secrets/config handling, observability, backup/restore, jobs, schedulers, queues, and operational dependencies if present
-7. **Constraints and trade-offs** — known limitations and why they exist
-8. **Sources inspected** — files/directories used as evidence
+Always run.
 
-Only include the sections and diagrams supported by the repository. For simple projects, omit context/container/deployment sections when they do not apply.
+### `create-architecture-docs`
 
-See [references/diagrams.md](references/diagrams.md) for Mermaid diagram patterns.
-See [references/templates.md](references/templates.md) for document structure.
+Always run.
 
-### 6. Generate Development Guide
+### `create-development-guide`
 
-Generate `{scope}/docs/development-guide.md` with:
+Always run unless the scope is purely documentary and has no executable development workflow.
 
-1. **Prerequisites** — required tools and versions
-2. **Setup** — clone, install dependencies, configure environment
-3. **Environment variables** — list with descriptions (infer from .env.example or config)
-4. **Run locally** — dev server, watch mode, hot reload
-5. **Testing** — how to run tests, what frameworks are used
-6. **Linting and formatting** — commands and config
-7. **Build** — production build command and output
-8. **Security and operational notes** — secrets handling, local credentials, background workers, seed/migration order, known safety precautions
-9. **Common issues** — FAQ from patterns you observe (e.g., port conflicts, missing env vars)
-10. **Sources inspected** — files/directories used as evidence
+### `create-adrs`
 
-Infer all steps from scripts, config files, and Dockerfiles. Use actual commands found in the project.
+Run when you can identify important, hard-to-reverse, or cross-cutting technical decisions.
 
-### 7. Record Decisions (ADRs)
+### `create-runbooks`
 
-Generate `{scope}/docs/decisions/NNN-title.md` files:
+Run when the repository shows evidence of deployment, migration, operations, workers, queues, jobs, or incident handling.
 
-1. **Identify decisions** — tech stack choices, architectural patterns, library selections that can be inferred from the codebase
-2. **Use MADR format** — Status, Context, Decision Drivers, Considered Options, Decision Outcome, Consequences
-3. **Naming** — `NNN-short-kebab-case-title.md` (e.g., `001-use-layered-architecture.md`)
-4. **Focus on "why"** — the rationale matters more than the "what"
-5. **For existing projects** — note that context is reconstructed from code analysis
-6. **Do not overstate rationale** — if the reason cannot be verified from code, issues, or docs, mark it as reconstructed or uncertain
+### `create-data-model-docs`
 
-Write an ADR when the decision is hard to reverse, affects multiple parts of the system, or will be questioned in the future.
+Run when persistent data is present: ORM models, migrations, schemas, entity definitions, or database configuration.
 
-See [references/templates.md](references/templates.md) for MADR template.
+### `create-api-docs`
 
-### 8. Write Runbooks
+Run when the scope exposes an API: routes, controllers, resolvers, RPC handlers, OpenAPI specs, or similar.
 
-Generate `{scope}/docs/runbooks/*.md` files when the project has deployment, database, or operational concerns:
+### `create-glossary`
 
-1. **Identify operations** — deploy, migrate, rollback, scale, recover
-2. **Two types:**
-   - **Operational** (routine) — deploy, migrate, rotate credentials, release
-   - **Troubleshooting** (incidents) — outage, performance degradation, data issues
-3. **Each runbook must include:**
-   - Overview and trigger conditions
-   - Prerequisites (access, tools, permissions)
-   - Step-by-step procedure with exact commands
-   - Verification steps (how to confirm success)
-   - Rollback steps
-   - Escalation path
-   - Sources inspected
-4. **Use safety warnings** (⚠️) before destructive operations
-5. **One action per step** — don't combine multiple commands
+Run when the scope uses domain-specific language, acronyms, bounded contexts, or internal terminology.
 
-Infer commands from CI/CD configs, scripts, and Dockerfiles.
+### `validate-generated-docs`
 
-See [references/templates.md](references/templates.md) for runbook template.
+Always run last.
 
-### 9. Generate Data Model (if applicable)
+## Conflict Resolution
 
-Generate `{scope}/docs/data-model.md` when the project has persistent data:
+If sub-skills produce overlapping or conflicting information:
 
-1. **ER diagram** — use Mermaid `erDiagram` syntax showing entities and relationships
-2. **Entity descriptions** — purpose, key fields, constraints
-3. **Relationships** — cardinality and business meaning
-4. **Data lifecycle** — how records are created, updated, archived, deleted
-5. **Sources inspected** — schema/model files used to infer the structure
+1. prefer direct evidence over inference
+2. prefer the more specialized sub-skill over the more general one
+3. if the conflict cannot be resolved, mark it as **Needs confirmation**
+4. fix links and naming inconsistencies before finalizing
 
-Infer from schema files, migration files, ORM models, or type definitions.
+## Shared References
 
-### 10. Generate API Reference (if applicable)
+Use the shared references when they apply:
 
-Generate `{scope}/docs/api-reference.md` when the project exposes an API:
+- [references/templates.md](references/templates.md)
+- [references/diagrams.md](references/diagrams.md)
+- the shared quality checklist in `references/quality-checklist.md`
 
-1. **Base info** — base URL pattern, versioning strategy, auth requirements
-2. **Endpoints** — grouped by resource/domain, with method, path, description
-3. **Request/response shapes** — infer from types, schemas, or validation
-4. **Error handling** — common error codes and their meaning
-5. **Sources inspected** — routes/controllers/schemas used as evidence
+Sub-skills may also have local references that specialize these shared materials.
 
-Infer from route definitions, controllers, middleware, and type definitions.
-
-### 11. Generate Glossary (if applicable)
-
-Generate `{scope}/docs/glossary.md` when the domain has specialized language:
-
-1. **Domain terms** — business concepts found in model names and business logic
-2. **Project-specific terms** — abbreviations, acronyms, internal naming
-3. **Sort alphabetically**
-
-### 12. Update README
-
-Add or update a `## Documentation` section in the scope README.md that links to each generated file in `{scope}/docs/`.
-
-### 13. Validate Before Finalizing
-
-Before final output, validate the generated documentation:
-
-1. **Commands are real** — verify setup, test, lint, build, deploy, and migration commands against scripts, Makefiles, Dockerfiles, CI jobs, or task runners
-2. **Links resolve** — check cross-links and README links
-3. **Mermaid is internally consistent** — entity names, participants, and nodes match the written description
-4. **No empty sections** — remove placeholder sections that are not supported by evidence
-5. **Inference is labeled** — every reconstructed statement is marked appropriately
-6. **Scope is explicit** — monorepo/package/service boundaries are clearly called out
-7. **Output path is correct** — generated files live under `{scope}/docs/`, not outside the selected scope
-
-## Quality Checklist
+## Completion Checklist
 
 Before finalizing, verify:
 
-- [ ] All diagrams use valid Mermaid syntax
-- [ ] Architecture diagrams reflect actual code structure (not aspirational)
-- [ ] ADRs explain "why", not just "what"
-- [ ] Reconstructed ADR rationale is labeled when not directly evidenced
-- [ ] Runbook commands are real (inferred from project scripts/configs)
-- [ ] Development guide steps can be followed sequentially
-- [ ] No technology-specific assumptions that don't match the codebase
-- [ ] Every document includes sources inspected or equivalent evidence notes
-- [ ] Inferred or uncertain statements are explicitly marked
-- [ ] Monorepo or partial-repo scope is clearly stated when applicable
-- [ ] Generated files are placed under `{scope}/docs/`
-- [ ] Cross-references between documents are consistent
-- [ ] project-overview.md links to all other generated docs
-
-## External Resources
-
-- [Mermaid](https://mermaid.js.org/) — Diagrams as code
-- [MADR](https://adr.github.io/madr/) — Markdown Any Decision Record
-- [C4 Model](https://c4model.com/) — Software architecture visualization
-- [ADR GitHub Organization](https://adr.github.io/) — Decision record resources
-
----
-
-See [references/templates.md](references/templates.md) for document templates.
-See [references/diagrams.md](references/diagrams.md) for Mermaid diagram patterns.
+- [ ] `{scope}` is explicit
+- [ ] output files are inside `{scope}/docs/`
+- [ ] every document includes evidence or sources inspected
+- [ ] inferred statements are labeled
+- [ ] diagrams reflect the real code structure
+- [ ] runbook commands are evidenced by repository artifacts
+- [ ] README links point to generated docs inside the selected scope
+- [ ] the validation sub-skill has been run
