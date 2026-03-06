@@ -11,6 +11,7 @@ Use this checklist after generating documentation under `{scope}/docs/`.
 - [ ] Uncertain statements are labeled as `Needs confirmation`.
 - [ ] Each document includes `Sources inspected`.
 - [ ] Links between documents resolve correctly.
+- [ ] Editorial cleanup has removed stale placeholders and obvious duplication.
 
 ## Document-Specific Checks
 
@@ -53,3 +54,10 @@ Use this checklist after generating documentation under `{scope}/docs/`.
 
 - [ ] Terms reflect real domain or internal language.
 - [ ] Definitions are concise and non-speculative.
+
+## Cleanup and Review
+
+- [ ] Terminology is consistent across all generated docs.
+- [ ] Repeated explanations were reduced or cross-linked instead of duplicated.
+- [ ] Heading levels, bullet lists, and tables are stylistically consistent.
+- [ ] Final wording is concise without changing evidenced meaning.

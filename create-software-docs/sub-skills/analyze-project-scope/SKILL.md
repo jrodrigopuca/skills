@@ -17,7 +17,14 @@ Determine the documentation `{scope}` before any other documentation skill runs.
 - decide which documentation outputs are applicable
 - report confidence and missing context
 
-## Required Output
+## Required Inputs
+
+- user request or selected target path
+- repository structure inside the potential `{scope}`
+- manifests, configs, entry points, and existing docs
+- any monorepo or multi-service boundaries visible in the repository
+
+## Expected Output
 
 Produce a structured result containing:
 
@@ -31,6 +38,8 @@ Produce a structured result containing:
 - `confidenceNote`
 - `missingContext`
 
+This output should be reusable by downstream sub-skills without redefining the scope.
+
 ## Rules
 
 - Prefer the smallest scope that matches the user request.
@@ -38,4 +47,6 @@ Produce a structured result containing:
 - If evidence is incomplete, state what cannot be verified.
 - Reuse the evidence inventory in downstream sub-skills.
 
-See [references/scope-rules.md](references/scope-rules.md) and [references/evidence-model.md](references/evidence-model.md).
+## References
+
+Use the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md) and the local references [references/scope-rules.md](references/scope-rules.md) and [references/evidence-model.md](references/evidence-model.md).

@@ -46,6 +46,7 @@ Use these sub-skills as building blocks:
 - `sub-skills/create-api-docs/`
 - `sub-skills/create-glossary/`
 - `sub-skills/validate-generated-docs/`
+- `sub-skills/cleanup-and-review-docs/`
 
 ## Operating Rules
 
@@ -57,7 +58,8 @@ These rules are mandatory across all sub-skills:
 4. **Cite repository evidence.** Every generated document must include a short **Sources inspected** section.
 5. **Respect scope boundaries.** Do not mix evidence from outside the selected `{scope}` unless you clearly label it as external context.
 6. **Keep cross-document consistency.** Names, modules, diagrams, and paths must agree across all docs.
-7. **Validate before finishing.** Always run the validation sub-skill after generation.
+7. **Validate before finishing.** Run the validation sub-skill before final cleanup and review.
+8. **Polish before delivery.** Run cleanup and review before considering the documentation complete.
 
 ## Orchestrator Workflow
 
@@ -109,6 +111,9 @@ Use this order unless there is a strong scope-specific reason to change it:
 8. `create-glossary` if domain language is non-trivial
 9. `create-adrs`
 10. `validate-generated-docs`
+11. `cleanup-and-review-docs`
+
+If cleanup performs meaningful edits, run `validate-generated-docs` once more as a final verification pass.
 
 ### 4. Update Scope README
 
@@ -154,7 +159,11 @@ Run when the scope uses domain-specific language, acronyms, bounded contexts, or
 
 ### `validate-generated-docs`
 
-Always run last.
+Always run before final cleanup, and run again after cleanup if needed.
+
+### `cleanup-and-review-docs`
+
+Run after validation when documentation is intended for delivery, review, or long-term maintenance.
 
 ## Conflict Resolution
 
@@ -171,6 +180,8 @@ Use the shared references when they apply:
 
 - [references/templates.md](references/templates.md)
 - [references/diagrams.md](references/diagrams.md)
+- [references/contracts/non-document-subskill.md](references/contracts/non-document-subskill.md)
+- [references/contracts/rules-and-checklists.md](references/contracts/rules-and-checklists.md)
 - the shared quality checklist in `references/quality-checklist.md`
 
 Sub-skills may also have local references that specialize these shared materials.
@@ -187,3 +198,4 @@ Before finalizing, verify:
 - [ ] runbook commands are evidenced by repository artifacts
 - [ ] README links point to generated docs inside the selected scope
 - [ ] the validation sub-skill has been run
+- [ ] cleanup and review has been completed for deliverable documentation

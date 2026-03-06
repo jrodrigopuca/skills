@@ -6,7 +6,7 @@ license: MIT
 
 # Validate Generated Docs
 
-Validate everything generated under `{scope}/docs/`.
+Validate everything generated under `{scope}/docs/` before final editorial cleanup, and optionally again after cleanup if substantial edits were made.
 
 ## Responsibilities
 
@@ -15,6 +15,26 @@ Validate everything generated under `{scope}/docs/`.
 - ensure evidence and confidence labeling are present
 - detect empty or speculative sections
 - review Mermaid consistency and document coherence
+- report issues that should be fixed by cleanup and review without inventing new content
+
+## Required Inputs
+
+- the generated files under `{scope}/docs/`
+- the selected `{scope}` and expected docs boundaries
+- cross-links between generated docs and the scope README
+- evidence markers such as `Sources inspected`, `Inferred`, and `Needs confirmation`
+
+## Expected Output
+
+Produce a structured validation result containing:
+
+- `filesChecked`
+- `issuesFound`
+- `brokenLinks`
+- `missingEvidenceNotes`
+- `speculativeSections`
+- `cleanupCandidates`
+- `status` (`pass`, `pass-with-findings`, or `fail`)
 
 ## Rules
 
@@ -22,5 +42,8 @@ Validate everything generated under `{scope}/docs/`.
 - Preserve specialized content from upstream sub-skills.
 - Report unresolved issues explicitly.
 - Use the final checklist before completion.
+- Do not absorb editorial cleanup responsibilities that belong to `cleanup-and-review-docs`.
 
-See [references/validation-rules.md](references/validation-rules.md) and [references/output-checklist.md](references/output-checklist.md).
+## References
+
+Use the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md) and the local references [references/validation-rules.md](references/validation-rules.md) and [references/output-checklist.md](references/output-checklist.md).
