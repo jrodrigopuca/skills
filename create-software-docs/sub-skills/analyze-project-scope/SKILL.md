@@ -11,8 +11,10 @@ Determine the documentation `{scope}` before any other documentation skill runs.
 ## Responsibilities
 
 - identify whether the target is a whole repo, app, package, or service
+- detect whether the workflow should behave as `generate`, `update`, or `reconcile`
 - detect technology stack and major entry points
 - identify evidence sources inside the selected scope
+- detect whether documentation already exists under `{scope}/docs/`
 - classify complexity as simple, medium, or complex
 - decide which documentation outputs are applicable
 - report confidence and missing context
@@ -30,10 +32,12 @@ Produce a **Scope Analysis Artifact** containing:
 
 - `scope`
 - `scopeType`
+- `operationMode`
 - `complexity`
 - `techStack`
 - `majorModules`
 - `sourcesInspected` as structured evidence references
+- `existingDocsDetected`
 - `documentsToGenerate`
 - `confidenceNote`
 - `missingContext`
@@ -46,6 +50,7 @@ This output should be reusable by downstream sub-skills without redefining the s
 - If the repo is a monorepo, identify the exact app/package/service root.
 - If evidence is incomplete, state what cannot be verified.
 - Reuse the evidence inventory in downstream sub-skills.
+- If docs already exist, determine whether the safest behavior is update-focused or reconcile-focused instead of full regeneration.
 
 ## References
 

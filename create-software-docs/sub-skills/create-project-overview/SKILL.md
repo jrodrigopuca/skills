@@ -13,6 +13,7 @@ license: MIT
 - list key modules and responsibilities
 - act as the entry point to all generated docs
 - link only to docs generated inside `{scope}/docs/`
+- preserve still-valid overview sections when updating existing docs
 
 ## Required Inputs
 
@@ -20,6 +21,7 @@ license: MIT
 - scope analysis results, including stack, modules, and confidence notes
 - the list of documents actually generated under `{scope}/docs/`
 - repository structure and supporting evidence inside the selected scope
+- the existing `{scope}/docs/project-overview.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -34,12 +36,15 @@ Produce a **Document Generation Artifact** for the project overview containing a
 
 The generated document must include the overview sections defined by the shared template and link only to documentation that exists inside `{scope}/docs/`.
 
+In `update` or `reconcile` mode, preserve accurate summary, structure, and links where they remain valid, and update only the sections impacted by current repository evidence.
+
 ## Rules
 
 - Keep it concise.
 - Do not duplicate full architecture details.
 - Include `Scope`, `Confidence Note`, and `Sources Inspected`.
 - Use repository-relative paths that match the selected scope.
+- Do not rewrite the full overview when only links, module summaries, or scope notes need refreshing.
 
 ## References
 

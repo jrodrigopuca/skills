@@ -12,6 +12,7 @@ license: MIT
 - document exact evidenced procedures
 - include verification, rollback, and escalation
 - warn before destructive operations
+- preserve still-valid procedures when updating existing runbooks
 
 ## Required Inputs
 
@@ -19,6 +20,7 @@ license: MIT
 - deployment, migration, CI/CD, worker, queue, or task-runner evidence
 - commands and procedures that can be grounded in repository artifacts
 - validation or architecture findings that identify operational scenarios
+- existing runbooks under `{scope}/docs/runbooks/` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -32,12 +34,15 @@ Produce one or more **Document Generation Artifacts** for runbooks containing at
 
 Choose operational and troubleshooting templates according to scenario type, and include only steps and commands that are evidenced or clearly marked as needing confirmation.
 
+In `update` or `reconcile` mode, preserve valid procedures and update only the scenarios, commands, checks, or rollback paths affected by new evidence.
+
 ## Rules
 
 - One action per step.
 - Prefer commands from scripts, CI/CD, task runners, and deployment config.
 - If a command or sequence cannot be verified, mark it `Needs confirmation`.
 - Include `Sources Inspected` in every runbook.
+- Remove or revise stale operational steps promptly when repository evidence no longer supports them.
 
 ## References
 

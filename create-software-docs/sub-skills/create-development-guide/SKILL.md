@@ -13,6 +13,7 @@ license: MIT
 - list real run, test, lint, and build commands
 - mention operational and safety notes for development
 - record common issues visible from the repository
+- preserve still-valid setup and workflow instructions when updating existing docs
 
 ## Required Inputs
 
@@ -20,6 +21,7 @@ license: MIT
 - scripts, Makefiles, Dockerfiles, CI config, or task runners relevant to local development
 - environment variable sources such as config files or examples
 - scope analysis results and confidence notes
+- the existing `{scope}/docs/development-guide.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -34,12 +36,15 @@ Produce a **Document Generation Artifact** for the development guide containing 
 
 The generated document must include only commands and setup steps evidenced by the repository, marking unverifiable steps as `Needs confirmation` when omission would hide a real gap.
 
+In `update` or `reconcile` mode, preserve still-correct commands and setup steps, and refresh only the areas changed by current repository evidence.
+
 ## Rules
 
 - Never invent commands.
 - Prefer commands from scripts, Makefiles, Dockerfiles, CI config, or task runners.
 - If a step cannot be verified, label it `Needs confirmation`.
 - Include `Sources Inspected`.
+- Remove or update stale commands instead of retaining legacy instructions that no longer match the repository.
 
 ## References
 

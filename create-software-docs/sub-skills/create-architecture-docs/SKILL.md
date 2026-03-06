@@ -13,6 +13,7 @@ license: MIT
 - document modules, dependencies, and cross-cutting concerns
 - include security and operational notes when evidenced
 - omit unsupported sections rather than speculate
+- preserve still-valid architectural sections and diagrams when updating existing docs
 
 ## Required Inputs
 
@@ -20,6 +21,7 @@ license: MIT
 - architecture-relevant evidence: modules, entry points, integrations, infra signals, and existing docs
 - scope analysis results and terminology to keep consistent across docs
 - Mermaid guidance and any scoped diagram constraints
+- the existing `{scope}/docs/architecture.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -34,12 +36,15 @@ Produce a **Document Generation Artifact** for architecture containing at least:
 
 The generated document must include required sections from the shared architecture template and use only diagrams supported by repository evidence.
 
+In `update` or `reconcile` mode, refresh only the sections and diagrams contradicted, expanded, or made obsolete by new evidence.
+
 ## Rules
 
 - Always include a component diagram and at least one critical sequence when evidence supports them.
 - For simple projects, omit context, container, and deployment sections unless clearly supported.
 - Keep naming aligned with actual modules, services, and integrations.
 - Include `Scope`, `Confidence Note`, and `Sources Inspected`.
+- Replace outdated diagrams or section fragments instead of regenerating the full document when partial updates are sufficient.
 
 ## References
 

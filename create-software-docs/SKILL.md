@@ -6,7 +6,7 @@ license: MIT
 
 # Software Project Documentation Orchestrator
 
-Generate structured project documentation by coordinating specialized documentation sub-skills.
+Generate or update structured project documentation by coordinating specialized documentation sub-skills.
 
 ## Overview
 
@@ -14,14 +14,29 @@ This skill is the **orchestrator** for project documentation. It does not try to
 
 1. resolves the documentation `{scope}`
 2. gathers shared evidence
-3. decides which sub-skills are applicable
-4. executes them in the right order
-5. consolidates output under `{scope}/docs/`
-6. validates consistency before finishing
+3. decides whether to generate, update, or reconcile documentation
+4. decides which sub-skills are applicable
+5. executes them in the right order
+6. consolidates output under `{scope}/docs/`
+7. validates consistency before finishing
 
 The orchestrator is responsible for hierarchy, activation order, and global quality rules.
 
 It is also responsible for coordinating artifact handoffs between sub-skills using the shared handoff contract.
+
+## Operation Modes
+
+This skill should support three operating modes:
+
+- `generate` — create documentation that does not yet exist for the selected `{scope}`
+- `update` — refresh existing documentation while preserving still-valid content
+- `reconcile` — align existing documentation with current repository evidence when drift, staleness, or partial inconsistency is detected
+
+Default behavior:
+
+- use `generate` when `{scope}/docs/` does not exist or is effectively empty
+- use `update` when documentation already exists and the goal is to refresh only impacted content
+- use `reconcile` when existing documentation appears inconsistent, partially stale, or unevenly maintained
 
 ## Output Convention
 
@@ -74,17 +89,38 @@ The scope analysis must determine:
 
 - scope root
 - scope type: repository, app, package, or service
+- operation mode: `generate`, `update`, or `reconcile`
 - project complexity: simple, medium, or complex
 - main technologies
 - major modules and entry points
 - evidence inventory
+- whether existing docs already exist under `{scope}/docs/`
 - applicable document types
 
 If the repository is partial, document the missing context explicitly.
 
-### 2. Build the Generation Plan
+### 2. Inspect Existing Documentation When Present
+
+If documentation already exists under `{scope}/docs/`, inspect it before rewriting anything.
+
+At minimum:
+
+- identify which generated docs already exist
+- determine which documents are still valid and mostly reusable
+- determine which sections are stale, missing, or contradicted by repository evidence
+- preserve valid content whenever safe
+- avoid full regeneration when only specific sections or files need updates
+
+### 3. Build the Generation or Update Plan
 
 Based on scope analysis, decide which documents to generate.
+
+In `update` or `reconcile` mode, decide which documents to:
+
+- leave unchanged
+- partially update
+- substantially rewrite
+- mark as obsolete or remove if they no longer fit the selected scope
 
 #### Always generate
 
@@ -101,7 +137,7 @@ Based on scope analysis, decide which documents to generate.
 - `{scope}/docs/glossary.md`
 - `{scope}/docs/known-issues.md`
 
-### 3. Execute Sub-skills in Order
+### 4. Execute Sub-skills in Order
 
 Use this order unless there is a strong scope-specific reason to change it:
 
@@ -120,7 +156,9 @@ Use this order unless there is a strong scope-specific reason to change it:
 
 If cleanup or known-issues generation performs meaningful edits, run `validate-generated-docs` once more as a final verification pass.
 
-### 3.1 Coordinate Handoffs
+In `update` or `reconcile` mode, run only the sub-skills needed for impacted documentation areas, but always keep scope analysis, validation, and cleanup in the loop.
+
+### 4.1 Coordinate Handoffs
 
 Use the shared handoff contract to coordinate the workflow:
 
@@ -131,15 +169,19 @@ Use the shared handoff contract to coordinate the workflow:
 - pass the `Validation Artifact` and `Cleanup Artifact` into `create-known-issues` when persistent issues remain worth tracking
 - request a final validation pass when cleanup or known-issues generation reports meaningful edits
 
+In `update` or `reconcile` mode, also pass forward the knowledge of which documents already existed and which sections were intentionally preserved.
+
 When coordinating `knownIssueCandidates`, apply this boundary:
 
 - keep ordinary validation findings in validation output if they do not need long-term tracking
 - keep editorial or easy structural fixes in cleanup work when they can be resolved in the same pass
 - send only persistent, evidence-backed, track-worthy issues into `create-known-issues` as input for the `Known Issues Document Artifact`
 
-### 4. Update Scope README
+### 5. Update Scope README
 
 After generation and validation, add or update a `## Documentation` section in the README that belongs to the selected `{scope}`.
+
+In `update` or `reconcile` mode, preserve valid README links and only change what is required by the refreshed documentation set.
 
 ## Activation Rules
 
@@ -151,9 +193,13 @@ Always run.
 
 Always run.
 
+In `update` or `reconcile` mode, update only the impacted sections when the existing overview is still mostly valid.
+
 ### `create-architecture-docs`
 
 Always run.
+
+In `update` or `reconcile` mode, prefer section-level updates when the existing architecture doc still matches the current codebase broadly.
 
 ### `create-development-guide`
 
@@ -189,9 +235,13 @@ Do not run it for transient editorial noise or for minor findings that were full
 
 Always run before final cleanup, and run again after cleanup if needed.
 
+In `update` or `reconcile` mode, also verify that preserved content still matches repository evidence.
+
 ### `cleanup-and-review-docs`
 
 Run after validation when documentation is intended for delivery, review, or long-term maintenance.
+
+In `update` or `reconcile` mode, preserve valid existing phrasing when it remains accurate and consistent.
 
 ## Conflict Resolution
 
@@ -232,3 +282,5 @@ Before finalizing, verify:
 - [ ] cleanup and review has been completed for deliverable documentation
 - [ ] cleanup output makes unresolved items and follow-up actions explicit when they remain
 - [ ] known issues were documented when unresolved or accepted limitations remain
+- [ ] existing valid documentation was preserved when operating in `update` or `reconcile` mode
+- [ ] stale or contradicted sections were updated, removed, or explicitly marked

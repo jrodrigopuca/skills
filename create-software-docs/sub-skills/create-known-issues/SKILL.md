@@ -13,6 +13,7 @@ license: MIT
 - preserve issue status and future clarification or re-evaluation needs
 - avoid losing known gaps that should remain visible to humans or future LLMs
 - consume only persistent `knownIssueCandidates`, not transient drafting defects
+- preserve stable issue identifiers and statuses when updating an existing known-issues document
 
 ## Required Inputs
 
@@ -21,6 +22,7 @@ license: MIT
 - cleanup findings, especially structured `remainingIssues`, surviving `knownIssueCandidates`, and follow-up validation needs
 - scope analysis findings when context gaps or partial repository boundaries exist
 - repository evidence supporting each issue entry
+- the existing `{scope}/docs/known-issues.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -34,6 +36,8 @@ Produce a **Document Generation Artifact** for known issues containing at least:
 
 The generated document must track per-item status and future clarification or re-evaluation notes.
 
+In `update` or `reconcile` mode, preserve existing issue identifiers and update status, evidence, and review notes instead of recreating the issue list from scratch whenever possible.
+
 ## Rules
 
 - Include only issues supported by repository evidence or by upstream sub-skill findings.
@@ -44,6 +48,7 @@ The generated document must track per-item status and future clarification or re
 - Merge duplicates coming from validation and cleanup into one stable issue entry when they describe the same underlying problem.
 - Prefer the cleanup artifact over the validation artifact when deciding whether a candidate still needs long-term tracking.
 - Treat a `remainingIssue` as input context, but escalate it into a final known issue only when it truly needs status tracking or future re-evaluation.
+- If a previously tracked issue is no longer evidenced, update its status or resolution context instead of silently dropping it.
 
 ## References
 

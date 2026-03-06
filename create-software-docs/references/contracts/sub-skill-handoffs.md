@@ -345,10 +345,12 @@ Fields:
 
 - `scope`
 - `scopeType`
+- `operationMode`
 - `complexity`
 - `techStack`
 - `majorModules`
 - `sourcesInspected` (as `Evidence Reference` entries)
+- `existingDocsDetected`
 - `documentsToGenerate`
 - `confidenceNote`
 - `missingContext`
@@ -511,15 +513,16 @@ Prefer a remaining issue when:
 ### Recommended Flow
 
 1. `analyze-project-scope` produces the scope analysis artifact.
-2. Document-producing sub-skills consume scope analysis and produce document generation artifacts.
-3. `validate-generated-docs` consumes generated documents plus scope context and produces a validation artifact.
-4. `validate-generated-docs` should emit structured `issuesFound` for all meaningful findings discovered during validation.
-5. `validate-generated-docs` should add structured `cleanupCandidates` for issues expected to be handled during cleanup.
-6. `validate-generated-docs` should add `knownIssueCandidates` only for persistent or track-worthy issues, not for every finding.
-7. `cleanup-and-review-docs` consumes generated documents plus the validation artifact and produces a cleanup artifact.
-8. `cleanup-and-review-docs` should preserve, refine, apply, or drop cleanup candidates, emit structured remaining issues for unresolved items, and emit only the known issue candidates that still deserve tracking.
-9. `create-known-issues` consumes scope, validation, and cleanup findings and produces a known issues document artifact when applicable.
-10. The orchestrator decides whether a final validation pass is required.
+2. In `update` or `reconcile` mode, existing docs under `{scope}/docs/` should be inspected before document-producing sub-skills rewrite anything.
+3. Document-producing sub-skills consume scope analysis and produce document generation artifacts.
+4. `validate-generated-docs` consumes generated or updated documents plus scope context and produces a validation artifact.
+5. `validate-generated-docs` should emit structured `issuesFound` for all meaningful findings discovered during validation.
+6. `validate-generated-docs` should add structured `cleanupCandidates` for issues expected to be handled during cleanup.
+7. `validate-generated-docs` should add `knownIssueCandidates` only for persistent or track-worthy issues, not for every finding.
+8. `cleanup-and-review-docs` consumes generated or updated documents plus the validation artifact and produces a cleanup artifact.
+9. `cleanup-and-review-docs` should preserve, refine, apply, or drop cleanup candidates, emit structured remaining issues for unresolved items, and emit only the known issue candidates that still deserve tracking.
+10. `create-known-issues` consumes scope, validation, and cleanup findings and produces a known issues document artifact when applicable.
+11. The orchestrator decides whether a final validation pass is required.
 
 ## 4. Examples Appendix
 

@@ -10,6 +10,17 @@ This index summarizes:
 2. sub-skill roles
 3. main artifacts exchanged through the pipeline
 4. shared contracts that keep the workflow consistent
+5. how the same pipeline supports generation and documentation updates
+
+## Supported Modes
+
+The orchestrator can use the same sub-skills in these modes:
+
+- `generate` for new documentation
+- `update` for refreshing existing docs while preserving valid content
+- `reconcile` for bringing drifted or partially stale docs back in line with repository evidence
+
+In `update` and `reconcile` modes, existing files under `{scope}/docs/` should be treated as inputs to inspect before rewriting.
 
 ## Execution Order
 
@@ -34,7 +45,9 @@ If cleanup or known-issues generation performs substantial edits, run `validate-
 
 - `analyze-project-scope`
   - resolves `{scope}`
+  - determines whether the workflow is `generate`, `update`, or `reconcile`
   - identifies evidence sources
+  - detects existing documentation inside `{scope}/docs/`
   - decides which docs should be generated
   - produces the `Scope Analysis Artifact`
 
@@ -51,6 +64,8 @@ If cleanup or known-issues generation performs substantial edits, run `validate-
 
 These sub-skills generate final documentation files and produce `Document Generation Artifact` outputs.
 
+In `update` and `reconcile` modes, they should preserve accurate existing content and update only the impacted files or sections when possible.
+
 ### Known-Issue Documentation
 
 - `create-known-issues`
@@ -61,6 +76,7 @@ This sub-skill generates the final known-issues document and produces the `Known
 
 - `validate-generated-docs`
   - validates generated docs against scope, evidence, links, and consistency rules
+  - verifies that preserved existing content still matches the repository
   - produces the `Validation Artifact`
   - emits structured fields such as `filesChecked`, `issuesFound`, `brokenLinks`, `missingEvidenceNotes`, `speculativeSections`, `cleanupCandidates`, and `knownIssueCandidates`
 
@@ -69,6 +85,7 @@ This sub-skill generates the final known-issues document and produces the `Known
 - `cleanup-and-review-docs`
   - applies safe editorial cleanup
   - resolves or escalates cleanup candidates
+  - preserves valid existing wording when it remains accurate
   - produces the `Cleanup Artifact`
   - emits structured `remainingIssues` and surviving `knownIssueCandidates`
 
@@ -81,6 +98,8 @@ The main handoff flow is:
 3. `validate-generated-docs` → `Validation Artifact`
 4. `cleanup-and-review-docs` → `Cleanup Artifact`
 5. `create-known-issues` → `Known Issues Document Artifact` when applicable
+
+In `update` and `reconcile` modes, existing docs are additional inputs to this flow, not just outputs to overwrite.
 
 ## Typed Artifact Highlights
 
