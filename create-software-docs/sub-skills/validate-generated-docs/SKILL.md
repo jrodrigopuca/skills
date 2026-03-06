@@ -26,7 +26,7 @@ Validate everything generated under `{scope}/docs/` before final editorial clean
 
 ## Expected Output
 
-Produce a structured validation result containing:
+Produce a **Validation Artifact** containing:
 
 - `filesChecked`
 - `issuesFound`
@@ -34,6 +34,7 @@ Produce a structured validation result containing:
 - `missingEvidenceNotes`
 - `speculativeSections`
 - `cleanupCandidates`
+- `knownIssueCandidates`
 - `status` (`pass`, `pass-with-findings`, or `fail`)
 
 ## Rules
@@ -46,4 +47,4 @@ Produce a structured validation result containing:
 
 ## References
 
-Use the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md) and the local references [references/validation-rules.md](references/validation-rules.md) and [references/output-checklist.md](references/output-checklist.md).
+Use the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md), the shared handoff contract in [../../references/contracts/sub-skill-handoffs.md](../../references/contracts/sub-skill-handoffs.md), and the local references [references/validation-rules.md](references/validation-rules.md) and [references/output-checklist.md](references/output-checklist.md).

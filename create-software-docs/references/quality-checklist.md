@@ -55,6 +55,13 @@ Use this checklist after generating documentation under `{scope}/docs/`.
 - [ ] Terms reflect real domain or internal language.
 - [ ] Definitions are concise and non-speculative.
 
+### Known Issues
+
+- [ ] Known issues are backed by evidence or upstream findings.
+- [ ] Each issue has an explicit status.
+- [ ] Future clarification or re-evaluation notes are present when needed.
+- [ ] Accepted or deferred issues are preserved instead of silently dropped.
+
 ## Cleanup and Review
 
 - [ ] Terminology is consistent across all generated docs.

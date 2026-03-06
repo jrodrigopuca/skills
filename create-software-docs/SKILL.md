@@ -1,6 +1,6 @@
 ---
 name: create-software-docs
-description: Orchestrate project documentation generation from codebase analysis using specialized sub-skills for scope analysis, architecture, development guides, ADRs, runbooks, APIs, data models, glossary, and validation. | Orquesta la generación de documentación de proyecto desde el análisis del código usando sub-skills especializadas para alcance, arquitectura, guía de desarrollo, ADRs, runbooks, API, modelo de datos, glosario y validación.
+description: Orchestrate project documentation generation from codebase analysis using specialized sub-skills for scope analysis, architecture, development guides, ADRs, runbooks, APIs, data models, glossary, known issues, validation, and cleanup. | Orquesta la generación de documentación de proyecto desde el análisis del código usando sub-skills especializadas para alcance, arquitectura, guía de desarrollo, ADRs, runbooks, API, modelo de datos, glosario, problemas conocidos, validación y limpieza.
 license: MIT
 ---
 
@@ -20,6 +20,8 @@ This skill is the **orchestrator** for project documentation. It does not try to
 6. validates consistency before finishing
 
 The orchestrator is responsible for hierarchy, activation order, and global quality rules.
+
+It is also responsible for coordinating artifact handoffs between sub-skills using the shared handoff contract.
 
 ## Output Convention
 
@@ -45,6 +47,7 @@ Use these sub-skills as building blocks:
 - `sub-skills/create-data-model-docs/`
 - `sub-skills/create-api-docs/`
 - `sub-skills/create-glossary/`
+- `sub-skills/create-known-issues/`
 - `sub-skills/validate-generated-docs/`
 - `sub-skills/cleanup-and-review-docs/`
 
@@ -96,6 +99,7 @@ Based on scope analysis, decide which documents to generate.
 - `{scope}/docs/data-model.md`
 - `{scope}/docs/api-reference.md`
 - `{scope}/docs/glossary.md`
+- `{scope}/docs/known-issues.md`
 
 ### 3. Execute Sub-skills in Order
 
@@ -112,8 +116,20 @@ Use this order unless there is a strong scope-specific reason to change it:
 9. `create-adrs`
 10. `validate-generated-docs`
 11. `cleanup-and-review-docs`
+12. `create-known-issues` if there are unresolved, accepted, deferred, or clarification-worthy issues
 
-If cleanup performs meaningful edits, run `validate-generated-docs` once more as a final verification pass.
+If cleanup or known-issues generation performs meaningful edits, run `validate-generated-docs` once more as a final verification pass.
+
+### 3.1 Coordinate Handoffs
+
+Use the shared handoff contract to coordinate the workflow:
+
+- consume the scope analysis artifact from `analyze-project-scope`
+- pass scope, evidence, and planning data into document-producing sub-skills
+- pass generated document outputs into `validate-generated-docs`
+- pass validation findings into `cleanup-and-review-docs`
+- pass validation and cleanup findings into `create-known-issues` when persistent issues remain worth tracking
+- request a final validation pass when cleanup reports meaningful edits
 
 ### 4. Update Scope README
 
@@ -157,6 +173,10 @@ Run when the scope exposes an API: routes, controllers, resolvers, RPC handlers,
 
 Run when the scope uses domain-specific language, acronyms, bounded contexts, or internal terminology.
 
+### `create-known-issues`
+
+Run when validation, cleanup, or scope analysis surfaces unresolved issues, accepted limitations, deferred work, monitoring items, or clarification gaps worth preserving in documentation.
+
 ### `validate-generated-docs`
 
 Always run before final cleanup, and run again after cleanup if needed.
@@ -180,8 +200,10 @@ Use the shared references when they apply:
 
 - [references/templates.md](references/templates.md)
 - [references/diagrams.md](references/diagrams.md)
+- [references/contracts/document-subskill.md](references/contracts/document-subskill.md)
 - [references/contracts/non-document-subskill.md](references/contracts/non-document-subskill.md)
 - [references/contracts/rules-and-checklists.md](references/contracts/rules-and-checklists.md)
+- [references/contracts/sub-skill-handoffs.md](references/contracts/sub-skill-handoffs.md)
 - the shared quality checklist in `references/quality-checklist.md`
 
 Sub-skills may also have local references that specialize these shared materials.
@@ -199,3 +221,4 @@ Before finalizing, verify:
 - [ ] README links point to generated docs inside the selected scope
 - [ ] the validation sub-skill has been run
 - [ ] cleanup and review has been completed for deliverable documentation
+- [ ] known issues were documented when unresolved or accepted limitations remain

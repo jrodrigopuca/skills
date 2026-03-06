@@ -35,11 +35,12 @@ Clean up and review everything generated under `{scope}/docs/`.
 
 ## Expected Output
 
-Produce a structured cleanup result containing:
+Produce a **Cleanup Artifact** containing:
 
 - `filesReviewed`
 - `cleanupActionsTaken`
 - `remainingIssues`
+- `knownIssueCandidates`
 - `followUpValidationNeeded`
 - `status` (`clean`, `clean-with-open-issues`, or `needs-manual-review`)
 
@@ -48,6 +49,7 @@ Produce a structured cleanup result containing:
 Use these references when reviewing:
 
 - the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md)
+- the shared handoff contract in [../../references/contracts/sub-skill-handoffs.md](../../references/contracts/sub-skill-handoffs.md)
 - `../../references/quality-checklist.md`
 - `references/cleanup-rules.md`
 - `references/editorial-checklist.md`

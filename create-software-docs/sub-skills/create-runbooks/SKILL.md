@@ -6,14 +6,31 @@ license: MIT
 
 # Create Runbooks
 
-Generate files under `{scope}/docs/runbooks/`.
-
 ## Responsibilities
 
 - identify operational and troubleshooting scenarios
 - document exact evidenced procedures
 - include verification, rollback, and escalation
 - warn before destructive operations
+
+## Required Inputs
+
+- the selected `{scope}` and operational boundaries
+- deployment, migration, CI/CD, worker, queue, or task-runner evidence
+- commands and procedures that can be grounded in repository artifacts
+- validation or architecture findings that identify operational scenarios
+
+## Expected Output
+
+Produce one or more **Document Generation Artifacts** for runbooks containing at least:
+
+- `targetPath` values under `{scope}/docs/runbooks/`
+- `documentType`: `runbook-operational` or `runbook-troubleshooting`
+- `sourcesInspected`
+- `confidenceNote` when applicable
+- `openQuestions` or `needsConfirmation` when applicable
+
+Choose operational and troubleshooting templates according to scenario type, and include only steps and commands that are evidenced or clearly marked as needing confirmation.
 
 ## Rules
 
@@ -22,4 +39,6 @@ Generate files under `{scope}/docs/runbooks/`.
 - If a command or sequence cannot be verified, mark it `Needs confirmation`.
 - Include `Sources Inspected` in every runbook.
 
-See the shared templates at [../../references/templates/runbook-operational.md](../../references/templates/runbook-operational.md) and [../../references/templates/runbook-troubleshooting.md](../../references/templates/runbook-troubleshooting.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization notes in `references/operational-specialization.md` and `references/troubleshooting-specialization.md`.
+## References
+
+Use the shared document sub-skill contract in [../../references/contracts/document-subskill.md](../../references/contracts/document-subskill.md), the shared handoff contract in [../../references/contracts/sub-skill-handoffs.md](../../references/contracts/sub-skill-handoffs.md), the shared templates at [../../references/templates/runbook-operational.md](../../references/templates/runbook-operational.md) and [../../references/templates/runbook-troubleshooting.md](../../references/templates/runbook-troubleshooting.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization notes in `references/operational-specialization.md` and `references/troubleshooting-specialization.md`.

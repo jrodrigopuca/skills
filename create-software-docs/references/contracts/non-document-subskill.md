@@ -35,6 +35,8 @@ Typical fields include:
 - unresolved items
 - pass/fail summary when applicable
 
+Artifact names should align with the shared handoff contract in `sub-skill-handoffs.md` when outputs are passed to downstream sub-skills.
+
 ## Constraint
 
 Non-document sub-skills should not duplicate document templates. They should define process contracts, findings, and decision criteria.

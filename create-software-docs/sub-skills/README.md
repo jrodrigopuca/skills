@@ -15,23 +15,27 @@ This folder contains the specialized skills used by the `create-software-docs` o
 9. `create-adrs`
 10. `validate-generated-docs`
 11. `cleanup-and-review-docs`
+12. conditional: `create-known-issues`
 
-If cleanup performs substantial edits, run `validate-generated-docs` again as a final pass.
+If cleanup or known-issues generation performs substantial edits, run `validate-generated-docs` again as a final pass.
 
 ## Reference Contract
 
 Document-producing sub-skills should consume references in this order:
 
 1. shared conventions in `../references/templates/common.md`
-2. one document-specific shared template in `../references/templates/`
-3. one or more local specialization notes in the sub-skill `references/` folder
-4. any additional local rules files only when needed
+2. the shared contract in `../references/contracts/document-subskill.md`
+3. one document-specific shared template in `../references/templates/`
+4. one or more local specialization notes in the sub-skill `references/` folder
+5. any additional local rules files only when needed
 
 This keeps shared structure centralized and local behavior minimal.
 
 Non-document sub-skills should instead use the shared process contract in `../references/contracts/non-document-subskill.md` plus any local rules/checklists they require.
 
 Local rule files and checklist files should follow the shared contract in `../references/contracts/rules-and-checklists.md`.
+
+Artifact exchanges between sub-skills should align with the shared handoff contract in `../references/contracts/sub-skill-handoffs.md`.
 
 ## Purpose
 

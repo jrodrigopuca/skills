@@ -6,13 +6,28 @@ license: MIT
 
 # Create Glossary
 
-Generate `{scope}/docs/glossary.md`.
-
 ## Responsibilities
 
 - identify domain-specific terms
 - expand acronyms and internal naming
 - define terms concisely and consistently
+
+## Required Inputs
+
+- the selected `{scope}` and domain terminology visible in code or docs
+- model names, business logic, acronyms, and internal vocabulary from the repository
+- terminology already used in overview, architecture, API, and ADR documents
+
+## Expected Output
+
+Produce a **Document Generation Artifact** for the glossary containing at least:
+
+- `targetPath`: `{scope}/docs/glossary.md`
+- `documentType`: `glossary`
+- `sourcesInspected`
+- `openQuestions` or `needsConfirmation` when applicable
+
+The generated document must include only evidenced domain or internal terms and keep definitions short, consistent, and non-circular.
 
 ## Rules
 
@@ -21,4 +36,6 @@ Generate `{scope}/docs/glossary.md`.
 - Avoid circular definitions.
 - Include `Sources Inspected`.
 
-See the shared template at [../../references/templates/glossary.md](../../references/templates/glossary.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization note in `references/local-specialization.md`.
+## References
+
+Use the shared document sub-skill contract in [../../references/contracts/document-subskill.md](../../references/contracts/document-subskill.md), the shared handoff contract in [../../references/contracts/sub-skill-handoffs.md](../../references/contracts/sub-skill-handoffs.md), the shared template at [../../references/templates/glossary.md](../../references/templates/glossary.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization note in `references/local-specialization.md`.

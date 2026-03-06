@@ -26,7 +26,7 @@ Determine the documentation `{scope}` before any other documentation skill runs.
 
 ## Expected Output
 
-Produce a structured result containing:
+Produce a **Scope Analysis Artifact** containing:
 
 - `scope`
 - `scopeType`
@@ -49,4 +49,4 @@ This output should be reusable by downstream sub-skills without redefining the s
 
 ## References
 
-Use the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md) and the local references [references/scope-rules.md](references/scope-rules.md) and [references/evidence-model.md](references/evidence-model.md).
+Use the shared non-document contract in [../../references/contracts/non-document-subskill.md](../../references/contracts/non-document-subskill.md), the shared handoff contract in [../../references/contracts/sub-skill-handoffs.md](../../references/contracts/sub-skill-handoffs.md), and the local references [references/scope-rules.md](references/scope-rules.md) and [references/evidence-model.md](references/evidence-model.md).

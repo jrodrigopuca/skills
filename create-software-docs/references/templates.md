@@ -20,6 +20,7 @@ Use only the shared template that matches the document being generated.
 - [templates/data-model.md](templates/data-model.md)
 - [templates/api-reference.md](templates/api-reference.md)
 - [templates/glossary.md](templates/glossary.md)
+- [templates/known-issues.md](templates/known-issues.md)
 
 ## Consumption Rule
 
@@ -36,5 +37,6 @@ Examples:
 - `create-architecture-docs` → `templates/architecture.md`
 - `create-runbooks` → `templates/runbook-operational.md` and/or `templates/runbook-troubleshooting.md`
 - `create-adrs` → `templates/adr.md`
+- `create-known-issues` → `templates/known-issues.md`
 
 This keeps shared guidance modular and avoids loading unrelated template sections.
