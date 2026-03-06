@@ -59,6 +59,7 @@ Use this checklist after generating documentation under `{scope}/docs/`.
 
 - [ ] Known issues are backed by evidence or upstream findings.
 - [ ] Each issue has an explicit status.
+- [ ] Each issue explains why it is tracked instead of being treated as a normal validation note or cleanup-only fix.
 - [ ] Future clarification or re-evaluation notes are present when needed.
 - [ ] Accepted or deferred issues are preserved instead of silently dropped.
 

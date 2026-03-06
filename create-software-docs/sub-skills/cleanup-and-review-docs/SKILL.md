@@ -17,11 +17,14 @@ Clean up and review everything generated under `{scope}/docs/`.
 - standardize the use of `Inferred` and `Needs confirmation`
 - align terminology across overview, architecture, API, ADRs, runbooks, and glossary
 - fix minor cross-link and editorial consistency issues
+- emit structured `remainingIssues` for items that survive cleanup
+- keep only persistent, non-editorial issues in `knownIssueCandidates`
 
 ## Required Inputs
 
 - the validated files under `{scope}/docs/`
 - validation findings from `validate-generated-docs`
+- structured `cleanupCandidates` from validation
 - scope boundaries and expected output paths
 - quality and editorial review checklists
 
@@ -32,12 +35,16 @@ Clean up and review everything generated under `{scope}/docs/`.
 - Preserve repository-evidenced content from upstream sub-skills.
 - If a section is unresolved and cannot be safely cleaned, leave it explicit rather than guessing.
 - Keep the selected `{scope}` and output paths intact.
+- Remove candidates that were fully resolved during cleanup, and preserve only the issues that still deserve explicit tracking.
+- Resolve `cleanupCandidates` explicitly as applied, skipped, or escalated when feasible.
+- Use structured `remainingIssues` instead of vague closing notes when unresolved items survive cleanup.
 
 ## Expected Output
 
 Produce a **Cleanup Artifact** containing:
 
 - `filesReviewed`
+- `cleanupCandidatesReviewed`
 - `cleanupActionsTaken`
 - `remainingIssues`
 - `knownIssueCandidates`

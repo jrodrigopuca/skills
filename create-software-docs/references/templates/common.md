@@ -33,6 +33,8 @@ Use repository-backed confidence labels:
 
 List the main files or directories used as evidence.
 
+When possible, keep each entry aligned with the shared evidence-reference shape: path, kind, and why it matters.
+
 Example:
 
 - `[path/to/file-or-dir]` — [why it matters]

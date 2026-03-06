@@ -12,12 +12,13 @@ license: MIT
 - distinguish between newly detected issues, accepted limitations, deferred work, and resolved items that remain historically relevant
 - preserve issue status and future clarification or re-evaluation needs
 - avoid losing known gaps that should remain visible to humans or future LLMs
+- consume only persistent `knownIssueCandidates`, not transient drafting defects
 
 ## Required Inputs
 
 - the selected `{scope}` and documentation boundaries
-- validation findings, especially unresolved issues and cleanup candidates
-- cleanup findings, especially remaining issues and follow-up validation needs
+- validation findings, especially unresolved issues and `knownIssueCandidates`
+- cleanup findings, especially structured `remainingIssues`, surviving `knownIssueCandidates`, and follow-up validation needs
 - scope analysis findings when context gaps or partial repository boundaries exist
 - repository evidence supporting each issue entry
 
@@ -33,8 +34,6 @@ Produce a **Document Generation Artifact** for known issues containing at least:
 
 The generated document must track per-item status and future clarification or re-evaluation notes.
 
-- +The generated document must track per-item status and future clarification or re-evaluation notes.
-
 ## Rules
 
 - Include only issues supported by repository evidence or by upstream sub-skill findings.
@@ -42,6 +41,9 @@ The generated document must track per-item status and future clarification or re
 - Preserve issue history when an item is already acknowledged by the team.
 - Use explicit statuses rather than vague prose.
 - If an issue was reconsidered and is intentionally tolerated, change its status instead of deleting the record.
+- Merge duplicates coming from validation and cleanup into one stable issue entry when they describe the same underlying problem.
+- Prefer the cleanup artifact over the validation artifact when deciding whether a candidate still needs long-term tracking.
+- Treat a `remainingIssue` as input context, but escalate it into a final known issue only when it truly needs status tracking or future re-evaluation.
 
 ## References
 

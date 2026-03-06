@@ -33,7 +33,7 @@ Produce a **Scope Analysis Artifact** containing:
 - `complexity`
 - `techStack`
 - `majorModules`
-- `sourcesInspected`
+- `sourcesInspected` as structured evidence references
 - `documentsToGenerate`
 - `confidenceNote`
 - `missingContext`

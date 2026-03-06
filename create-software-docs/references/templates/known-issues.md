@@ -47,6 +47,7 @@ Target file: `{scope}/docs/known-issues.md`
 - Category: `[architecture | api | data | ops | docs | tooling | other]`
 - Affects: `[module, service, document, or path]`
 - Detected by: `[validation | cleanup | analysis | manual review]`
+- Tracking Reason: `[accepted limitation | unresolved risk | deferred work | monitoring item | clarification gap]`
 
 **Summary**
 
@@ -59,6 +60,10 @@ Target file: `{scope}/docs/known-issues.md`
 **Current Handling**
 
 [How the project or team currently treats this issue, if known]
+
+**Why This Is Tracked**
+
+[Why this issue remains visible instead of being treated as a transient finding or a cleanup-only task]
 
 **Future Clarification or Review**
 
@@ -75,4 +80,65 @@ Target file: `{scope}/docs/known-issues.md`
 ## Sources Inspected
 
 - `[path/to/file-or-dir]` — [why it matters]
+```
+
+## Candidate Translation Example
+
+Use this example only as a shape reference for transforming a `knownIssueCandidate` into the final document entry.
+
+Candidate input:
+
+```yaml
+candidateId: KI-CAND-001
+title: Deployment rollback step is undocumented
+summary: The repository includes deployment automation, but there is no evidenced rollback procedure in the generated or source operational docs.
+sourceType: validation
+affects:
+	- docs/runbooks/deploy.md
+	- .github/workflows/deploy.yml
+evidence:
+	- path: .github/workflows/deploy.yml
+		note: Confirms deployment automation exists.
+	- path: docs/runbooks/deploy.md
+		note: Describes deploy steps but does not define rollback.
+recommendedStatus: needs-clarification
+trackingReason: clarification gap
+currentHandling: Manual rollback may exist, but it is not evidenced in the repository.
+clarificationNeeded: Confirm whether rollback exists outside the repository or should be documented here.
+reEvaluateWhen: Next release process review or after operational documentation update.
+```
+
+Expected final entry shape:
+
+```markdown
+### KI-001: Deployment rollback step is undocumented
+
+- Status: `needs-clarification`
+- Category: `ops`
+- Affects: `docs/runbooks/deploy.md`, `.github/workflows/deploy.yml`
+- Detected by: `validation`
+- Tracking Reason: `clarification gap`
+
+**Summary**
+
+The repository shows deployment automation, but the rollback procedure is not evidenced in the available operational documentation.
+
+**Evidence**
+
+- `.github/workflows/deploy.yml` — confirms deployment automation exists.
+- `docs/runbooks/deploy.md` — includes deploy steps but no rollback section.
+
+**Current Handling**
+
+Manual rollback may exist, but it is not documented in repository evidence.
+
+**Why This Is Tracked**
+
+This affects operational safety and should remain visible until the team confirms whether rollback is undocumented or intentionally external.
+
+**Future Clarification or Review**
+
+- Clarification needed: confirm whether rollback exists outside the repository or should be documented here.
+- Re-evaluate when: next release process review or after operational documentation update.
+- Notes: keep this item visible until the rollback path is evidenced or the team explicitly accepts the gap.
 ```

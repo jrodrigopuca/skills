@@ -15,7 +15,12 @@ Validate everything generated under `{scope}/docs/` before final editorial clean
 - ensure evidence and confidence labeling are present
 - detect empty or speculative sections
 - review Mermaid consistency and document coherence
+- emit structured `filesChecked` entries for per-file validation coverage
+- emit structured `issuesFound` for meaningful validation findings
 - report issues that should be fixed by cleanup and review without inventing new content
+- emit structured `brokenLinks`, `missingEvidenceNotes`, and `speculativeSections`
+- emit structured `cleanupCandidates` for issues cleanup can safely address
+- identify only persistent, track-worthy findings as `knownIssueCandidates`
 
 ## Required Inputs
 
@@ -28,7 +33,7 @@ Validate everything generated under `{scope}/docs/` before final editorial clean
 
 Produce a **Validation Artifact** containing:
 
-- `filesChecked`
+- `filesChecked` as structured file check entries
 - `issuesFound`
 - `brokenLinks`
 - `missingEvidenceNotes`
@@ -44,6 +49,11 @@ Produce a **Validation Artifact** containing:
 - Report unresolved issues explicitly.
 - Use the final checklist before completion.
 - Do not absorb editorial cleanup responsibilities that belong to `cleanup-and-review-docs`.
+- Use structured `filesChecked` entries so downstream review can see which checks were applied per file.
+- Use structured `issuesFound` instead of free-form lists for meaningful validation findings.
+- Use structured `brokenLinks`, `missingEvidenceNotes`, and `speculativeSections` instead of ambiguous summaries.
+- Use structured `cleanupCandidates` instead of vague prose when the issue is expected to be handled during cleanup.
+- Do not promote every finding into `knownIssueCandidates`; use that field only for evidence-backed issues that should remain visible after the current pass.
 
 ## References
 

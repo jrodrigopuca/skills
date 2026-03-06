@@ -131,6 +131,12 @@ Use the shared handoff contract to coordinate the workflow:
 - pass validation and cleanup findings into `create-known-issues` when persistent issues remain worth tracking
 - request a final validation pass when cleanup reports meaningful edits
 
+When coordinating `knownIssueCandidates`, apply this boundary:
+
+- keep ordinary validation findings in validation output if they do not need long-term tracking
+- keep editorial or easy structural fixes in cleanup work when they can be resolved in the same pass
+- send only persistent, evidence-backed, track-worthy issues into `create-known-issues`
+
 ### 4. Update Scope README
 
 After generation and validation, add or update a `## Documentation` section in the README that belongs to the selected `{scope}`.
@@ -176,6 +182,8 @@ Run when the scope uses domain-specific language, acronyms, bounded contexts, or
 ### `create-known-issues`
 
 Run when validation, cleanup, or scope analysis surfaces unresolved issues, accepted limitations, deferred work, monitoring items, or clarification gaps worth preserving in documentation.
+
+Do not run it for transient editorial noise or for minor findings that were fully fixed during validation and cleanup.
 
 ### `validate-generated-docs`
 
