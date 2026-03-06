@@ -77,6 +77,8 @@ Apply only to the documents that were actually generated.
 
 ## 3. Validation Artifact Checks
 
+- [ ] `validationLevel` is explicit.
+- [ ] `deferredChecks` are listed when validation intentionally ran below full coverage.
 - [ ] `filesChecked` clearly shows which files were reviewed.
 - [ ] Per-file validation coverage is visible through applied checks or notes.
 - [ ] `issuesFound` entries are structured and specific enough to be actionable.

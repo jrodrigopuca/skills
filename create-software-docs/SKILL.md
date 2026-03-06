@@ -175,6 +175,22 @@ When downgrading:
 
 If even the downgraded workflow does not fit the available context, produce only a scoped plan plus the highest-value core docs and explicitly mark the rest as deferred.
 
+## Validation Levels
+
+Choose one validation level for each validation pass.
+
+- `minimal` — verify scope boundaries, output paths, `Sources inspected`, confidence labeling, obvious broken links, obvious speculative sections, and core README/doc navigation
+- `standard` — default level; includes `minimal` plus applicable document-specific checks, cross-document terminology consistency, and structured artifact quality checks
+- `full` — includes `standard` plus exhaustive link review, deeper preserved-content verification in `update` or `reconcile` mode, and stricter review of diagrams, operational procedures, and known-issue escalation boundaries
+
+Select the level like this:
+
+- use `minimal` for downgraded runs, fast-path simple projects, or final re-validation after purely editorial cleanup
+- use `standard` by default for normal generation or update workflows
+- use `full` for complex scopes, high-risk docs, heavy `reconcile` work, or when many preserved sections must be re-verified against repository evidence
+
+When validation is not `full`, explicitly state which deeper checks were deferred.
+
 ## Orchestrator Workflow
 
 ### 1. Resolve Scope
@@ -235,26 +251,40 @@ In `update` or `reconcile` mode, decide which documents to:
 
 ### 4. Execute Sub-skills in Order
 
-Use this order unless there is a strong scope-specific reason to change it:
+Use this staged order unless there is a strong scope-specific reason to change it:
 
 1. `analyze-project-scope`
-2. `create-project-overview`
-3. `create-architecture-docs`
-4. `create-development-guide`
-5. `create-data-model-docs` if persistent data exists
-6. `create-api-docs` if an API exists
-7. `create-runbooks` if deployments or operations exist
-8. `create-glossary` if domain language is non-trivial
-9. `create-adrs`
-10. `validate-generated-docs`
-11. `cleanup-and-review-docs`
-12. `create-known-issues` if there are unresolved, accepted, deferred, or clarification-worthy issues
+2. sequential core docs:
+   - `create-project-overview`
+   - `create-architecture-docs`
+   - `create-development-guide`
+3. optional document batch:
+   - `create-data-model-docs` if persistent data exists
+   - `create-api-docs` if an API exists
+   - `create-runbooks` if deployments or operations exist
+   - `create-glossary` if domain language is non-trivial
+4. `create-adrs`
+5. `validate-generated-docs`
+6. `cleanup-and-review-docs`
+7. `create-known-issues` if there are unresolved, accepted, deferred, or clarification-worthy issues
 
-If cleanup or known-issues generation performs meaningful edits, run `validate-generated-docs` once more as a final verification pass.
+Parallelization rule:
+
+- the optional document batch may run in parallel only after scope analysis and the three core docs have stabilized the main terminology, structure, and boundaries
+- parallelize only the sub-skills that are actually applicable and whose evidence is mostly independent
+- prefer sequential execution when the scope is small, context is tight, or cross-document terminology is still unstable
+- if optional docs run in parallel, merge and reconcile their artifacts before validation
+
+Validation rule:
+
+- select `minimal`, `standard`, or `full` validation before running `validate-generated-docs`
+- use `standard` by default, `minimal` for fast-path or downgraded runs, and `full` for complex or high-risk scopes
+- if cleanup or known-issues generation performs meaningful structural edits, run `validate-generated-docs` once more
+- if cleanup makes only editorial or formatting changes, a `minimal` final pass is enough
 
 In `update` or `reconcile` mode, run only the sub-skills needed for impacted documentation areas, but always keep scope analysis, validation, and cleanup in the loop.
 
-### 4.2 Fast Path for Simple Projects
+### 4.1 Fast Path for Simple Projects
 
 If scope analysis classifies the project as `simple`, prefer this reduced path unless strong evidence justifies more:
 
@@ -276,18 +306,21 @@ Add optional steps only when directly evidenced and clearly valuable:
 
 The fast path should reduce instruction and execution cost, not reduce factual quality.
 
-### 4.1 Coordinate Handoffs
+### 4.2 Coordinate Handoffs
 
 Use the shared handoff contract to coordinate the workflow:
 
 - consume the `Scope Analysis Artifact` from `analyze-project-scope`
 - pass scope, evidence, and planning data into document-producing sub-skills
+- when optional document sub-skills run in parallel, pass the same scope artifact and stable naming baseline into each of them
 - pass `Document Generation Artifact` outputs into `validate-generated-docs`
 - pass the `Validation Artifact` into `cleanup-and-review-docs`
 - pass the `Validation Artifact` and `Cleanup Artifact` into `create-known-issues` when persistent issues remain worth tracking
 - request a final validation pass when cleanup or known-issues generation reports meaningful edits
 
 In `update` or `reconcile` mode, also pass forward the knowledge of which documents already existed and which sections were intentionally preserved.
+
+When validation is run below `full`, pass forward the selected validation level and any deferred checks so cleanup, known-issues generation, and final review do not assume deeper coverage than what actually happened.
 
 When coordinating `knownIssueCandidates`, apply this boundary:
 
@@ -354,6 +387,12 @@ Do not run it for transient editorial noise or for minor findings that were full
 Always run before final cleanup, and run again after cleanup if needed.
 
 In `update` or `reconcile` mode, also verify that preserved content still matches repository evidence.
+
+Choose the validation level explicitly:
+
+- `minimal` for fast-path or downgraded runs
+- `standard` by default
+- `full` for complex, high-risk, or heavily preserved documentation sets
 
 ### `cleanup-and-review-docs`
 

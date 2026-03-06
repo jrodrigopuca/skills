@@ -10,6 +10,7 @@ Validate everything generated under `{scope}/docs/` before final editorial clean
 
 ## Responsibilities
 
+- apply the requested validation level: `minimal`, `standard`, or `full`
 - verify files are inside the selected scope
 - check cross-links and README links
 - ensure evidence and confidence labeling are present
@@ -21,11 +22,13 @@ Validate everything generated under `{scope}/docs/` before final editorial clean
 - emit structured `brokenLinks`, `missingEvidenceNotes`, and `speculativeSections`
 - emit structured `cleanupCandidates` for issues cleanup can safely address
 - identify only persistent, track-worthy findings as `knownIssueCandidates`
+- record any deferred checks when validation is intentionally lighter than full coverage
 
 ## Required Inputs
 
 - the generated files under `{scope}/docs/`
 - the selected `{scope}` and expected docs boundaries
+- the requested validation level: `minimal`, `standard`, or `full`
 - cross-links between generated docs and the scope README
 - evidence markers such as `Sources inspected`, `Inferred`, and `Needs confirmation`
 
@@ -33,6 +36,7 @@ Validate everything generated under `{scope}/docs/` before final editorial clean
 
 Produce a **Validation Artifact** containing:
 
+- `validationLevel`
 - `filesChecked` as structured file check entries
 - `issuesFound`
 - `brokenLinks`
@@ -40,6 +44,7 @@ Produce a **Validation Artifact** containing:
 - `speculativeSections`
 - `cleanupCandidates`
 - `knownIssueCandidates`
+- `deferredChecks` when applicable
 - `status` (`pass`, `pass-with-findings`, or `fail`)
 
 ## Rules
@@ -54,6 +59,12 @@ Produce a **Validation Artifact** containing:
 - Use structured `brokenLinks`, `missingEvidenceNotes`, and `speculativeSections` instead of ambiguous summaries.
 - Use structured `cleanupCandidates` instead of vague prose when the issue is expected to be handled during cleanup.
 - Do not promote every finding into `knownIssueCandidates`; use that field only for evidence-backed issues that should remain visible after the current pass.
+- Do not claim full coverage when running `minimal` or `standard`; record deeper checks as `deferredChecks` when they were intentionally skipped.
+- Apply validation levels like this:
+  - `minimal` — check scope, output paths, evidence labels, obvious link failures, obvious speculative sections, and core navigation
+  - `standard` — default; include `minimal` plus applicable document-specific checks and cross-document consistency review
+  - `full` — include `standard` plus exhaustive link review, preserved-content verification for `update` or `reconcile`, and stricter diagram and runbook scrutiny
+- When a final validation pass follows cleanup, use the level requested by the orchestrator instead of automatically repeating the heaviest possible review.
 
 ## References
 

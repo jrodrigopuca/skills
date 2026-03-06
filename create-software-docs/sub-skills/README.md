@@ -7,19 +7,27 @@ Read the orchestrator first for the full workflow, activation rules, and operati
 ## Execution Order
 
 1. `analyze-project-scope`
-2. `create-project-overview`
-3. `create-architecture-docs`
-4. `create-development-guide`
-5. conditional: `create-data-model-docs`
-6. conditional: `create-api-docs`
-7. conditional: `create-runbooks`
-8. conditional: `create-glossary`
-9. `create-adrs`
-10. `validate-generated-docs`
-11. `cleanup-and-review-docs`
-12. conditional: `create-known-issues`
+2. sequential core docs:
+   - `create-project-overview`
+   - `create-architecture-docs`
+   - `create-development-guide`
+3. optional batch, parallel only when safe:
+   - `create-data-model-docs`
+   - `create-api-docs`
+   - `create-runbooks`
+   - `create-glossary`
+4. `create-adrs`
+5. `validate-generated-docs`
+6. `cleanup-and-review-docs`
+7. conditional: `create-known-issues`
 
 If cleanup or known-issues generation performs substantial edits, run `validate-generated-docs` again as a final pass.
+
+Choose the validation level explicitly:
+
+- `minimal` for fast-path or downgraded runs
+- `standard` by default
+- `full` for complex, high-risk, or heavy `reconcile` workflows
 
 ## Role Groups
 

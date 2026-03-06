@@ -19,11 +19,13 @@ Clean up and review everything generated under `{scope}/docs/`.
 - fix minor cross-link and editorial consistency issues
 - emit structured `remainingIssues` for items that survive cleanup
 - keep only persistent, non-editorial issues in `knownIssueCandidates`
+- respect the validation level and any deferred checks from the validation artifact
 
 ## Required Inputs
 
 - the validated files under `{scope}/docs/`
 - validation findings from `validate-generated-docs`
+- the validation level used and any deferred checks
 - structured `cleanupCandidates` from validation
 - scope boundaries and expected output paths
 - quality and editorial review checklists
@@ -38,6 +40,7 @@ Clean up and review everything generated under `{scope}/docs/`.
 - Remove candidates that were fully resolved during cleanup, and preserve only the issues that still deserve explicit tracking.
 - Resolve `cleanupCandidates` explicitly as applied, skipped, or escalated when feasible.
 - Use structured `remainingIssues` instead of vague closing notes when unresolved items survive cleanup.
+- Do not assume a deferred validation check was already covered; preserve that limitation in cleanup output when it affects confidence.
 
 ## Expected Output
 
