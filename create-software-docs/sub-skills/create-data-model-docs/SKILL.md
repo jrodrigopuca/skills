@@ -12,7 +12,6 @@ license: MIT
 - document fields, constraints, and relationships
 - generate an evidence-based ER diagram
 - describe lifecycle when observable
-- preserve still-valid entity documentation when updating existing docs
 
 ## Required Inputs
 
@@ -20,7 +19,6 @@ license: MIT
 - schemas, migrations, ORM models, or database configuration files
 - scope analysis results and entity terminology
 - ERD rules that constrain what counts as persistence evidence
-- the existing `{scope}/docs/data-model.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -33,8 +31,6 @@ Produce a **Document Generation Artifact** for the data model containing at leas
 - `openQuestions` or `needsConfirmation` when applicable
 
 The generated document must cover only persisted entities and evidenced relationships, marking unclear cardinality or lifecycle details as `Needs confirmation` when necessary.
-
-In `update` or `reconcile` mode, keep accurate entity descriptions and refresh only the fields, relationships, or diagrams changed by current persistence evidence.
 
 ## Rules
 

@@ -2,25 +2,7 @@
 
 This folder contains the specialized skills used by the `create-software-docs` orchestrator.
 
-## Structure of This Index
-
-This index summarizes:
-
-1. execution order
-2. sub-skill roles
-3. main artifacts exchanged through the pipeline
-4. shared contracts that keep the workflow consistent
-5. how the same pipeline supports generation and documentation updates
-
-## Supported Modes
-
-The orchestrator can use the same sub-skills in these modes:
-
-- `generate` for new documentation
-- `update` for refreshing existing docs while preserving valid content
-- `reconcile` for bringing drifted or partially stale docs back in line with repository evidence
-
-In `update` and `reconcile` modes, existing files under `{scope}/docs/` should be treated as inputs to inspect before rewriting.
+Read the orchestrator first for the full workflow, activation rules, and operating modes.
 
 ## Execution Order
 
@@ -39,95 +21,24 @@ In `update` and `reconcile` modes, existing files under `{scope}/docs/` should b
 
 If cleanup or known-issues generation performs substantial edits, run `validate-generated-docs` again as a final pass.
 
-## Sub-skill Roles
+## Role Groups
 
-### Scope Analysis
-
-- `analyze-project-scope`
-  - resolves `{scope}`
-  - determines whether the workflow is `generate`, `update`, or `reconcile`
-  - identifies evidence sources
-  - detects existing documentation inside `{scope}/docs/`
-  - decides which docs should be generated
-  - produces the `Scope Analysis Artifact`
-
-### Document Generation
-
-- `create-project-overview`
-- `create-architecture-docs`
-- `create-development-guide`
-- `create-data-model-docs`
-- `create-api-docs`
-- `create-runbooks`
-- `create-glossary`
-- `create-adrs`
-
-These sub-skills generate final documentation files and produce `Document Generation Artifact` outputs.
-
-In `update` and `reconcile` modes, they should preserve accurate existing content and update only the impacted files or sections when possible.
-
-### Known-Issue Documentation
-
-- `create-known-issues`
-
-This sub-skill generates the final known-issues document and produces the `Known Issues Document Artifact`.
-
-### Validation
-
-- `validate-generated-docs`
-  - validates generated docs against scope, evidence, links, and consistency rules
-  - verifies that preserved existing content still matches the repository
-  - produces the `Validation Artifact`
-  - emits structured fields such as `filesChecked`, `issuesFound`, `brokenLinks`, `missingEvidenceNotes`, `speculativeSections`, `cleanupCandidates`, and `knownIssueCandidates`
-
-### Cleanup and Review
-
-- `cleanup-and-review-docs`
-  - applies safe editorial cleanup
-  - resolves or escalates cleanup candidates
-  - preserves valid existing wording when it remains accurate
-  - produces the `Cleanup Artifact`
-  - emits structured `remainingIssues` and surviving `knownIssueCandidates`
-
-## Artifact Pipeline Summary
-
-The main handoff flow is:
-
-1. `analyze-project-scope` → `Scope Analysis Artifact`
-2. document-producing sub-skills → `Document Generation Artifact`
-3. `validate-generated-docs` → `Validation Artifact`
-4. `cleanup-and-review-docs` → `Cleanup Artifact`
-5. `create-known-issues` → `Known Issues Document Artifact` when applicable
-
-In `update` and `reconcile` modes, existing docs are additional inputs to this flow, not just outputs to overwrite.
-
-## Typed Artifact Highlights
-
-The shared handoff contract also defines reusable structured items used inside those artifacts, including:
-
-- `Evidence Reference`
-- `File Check Entry`
-- `Validation Finding`
-- `Broken Link Entry`
-- `Missing Evidence Note`
-- `Speculative Section Entry`
-- `Cleanup Candidate`
-- `Remaining Issue`
-- `Known Issue Candidate`
-
-These reusable shapes should keep naming and escalation behavior consistent across the orchestrator, validation, cleanup, and known-issues stages.
-
-Use those shared shapes instead of free-form lists whenever the sub-skill output is intended for downstream consumption.
+- `analyze-project-scope` — resolves `{scope}`, mode, and evidence inventory
+- `create-*` document sub-skills — generate or update docs under `{scope}/docs/`
+- `validate-generated-docs` — produces the `Validation Artifact`
+- `cleanup-and-review-docs` — produces the `Cleanup Artifact`
+- `create-known-issues` — produces the `Known Issues Document Artifact` when applicable
 
 ## Reference Contract
 
 Document-producing sub-skills should consume references in this order:
 
 1. shared conventions in `../references/templates/common.md`
-2. the shared contract in `../references/contracts/document-subskill.md`
-3. one document-specific shared template in `../references/templates/`
-4. one or more local specialization notes in the sub-skill `references/` folder
-5. any additional local rules files only when needed
+2. the shared document contract in `../references/contracts/document-subskill.md`
+3. the shared update/reconcile guidance in `../references/contracts/update-reconcile-guidance.md` when applicable
+4. one document-specific shared template in `../references/templates/`
+5. one or more local specialization notes in the sub-skill `references/` folder
+6. any additional local rules files only when needed
 
 This keeps shared structure centralized and local behavior minimal.
 
@@ -136,8 +47,6 @@ Non-document sub-skills should instead use the shared process contract in `../re
 Local rule files and checklist files should follow the shared contract in `../references/contracts/rules-and-checklists.md`.
 
 Artifact exchanges between sub-skills should align with the shared handoff contract in `../references/contracts/sub-skill-handoffs.md`.
-
-When a sub-skill emits structured findings, prefer the canonical artifact names and shapes from that contract over local ad hoc lists.
 
 ## Purpose
 

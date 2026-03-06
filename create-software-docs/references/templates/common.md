@@ -46,5 +46,4 @@ Example:
 - Reuse the same terminology across all generated docs.
 - Keep links inside `{scope}/docs/` consistent with the selected scope.
 - Mark uncertain statements instead of completing gaps with guesses.
-- In `update` or `reconcile` mode, preserve still-valid existing content when it remains accurate and consistent.
-- Do not rewrite entire documents when only targeted sections need to be refreshed.
+- In `update` or `reconcile` mode, follow the shared guidance in `../contracts/update-reconcile-guidance.md`.

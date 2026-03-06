@@ -11,14 +11,12 @@ license: MIT
 - identify domain-specific terms
 - expand acronyms and internal naming
 - define terms concisely and consistently
-- preserve still-valid glossary entries when updating existing docs
 
 ## Required Inputs
 
 - the selected `{scope}` and domain terminology visible in code or docs
 - model names, business logic, acronyms, and internal vocabulary from the repository
 - terminology already used in overview, architecture, API, and ADR documents
-- the existing `{scope}/docs/glossary.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -30,8 +28,6 @@ Produce a **Document Generation Artifact** for the glossary containing at least:
 - `openQuestions` or `needsConfirmation` when applicable
 
 The generated document must include only evidenced domain or internal terms and keep definitions short, consistent, and non-circular.
-
-In `update` or `reconcile` mode, preserve valid terms and update only entries whose meaning, naming, or presence has changed.
 
 ## Rules
 

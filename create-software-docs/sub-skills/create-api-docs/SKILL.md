@@ -12,7 +12,6 @@ license: MIT
 - group endpoints or operations by domain
 - describe auth, request/response shapes, and error behavior when evidenced
 - avoid speculating about undocumented contracts
-- preserve still-valid endpoint documentation when updating existing docs
 
 ## Required Inputs
 
@@ -20,7 +19,6 @@ license: MIT
 - route definitions, handlers, schemas, resolvers, specs, or validators inside the scope
 - scope analysis and terminology used by related docs
 - endpoint rules that constrain grouping and evidence handling
-- the existing `{scope}/docs/api-reference.md` when operating in `update` or `reconcile` mode
 
 ## Expected Output
 
@@ -33,8 +31,6 @@ Produce a **Document Generation Artifact** for the API reference containing at l
 - `openQuestions` or `needsConfirmation` when applicable
 
 The generated document must include only evidenced endpoints or operations, marking incomplete payload, versioning, auth, or error details as `Needs confirmation` when needed.
-
-In `update` or `reconcile` mode, preserve accurate endpoint sections and refresh only the operations, auth details, schemas, or errors changed by current evidence.
 
 ## Rules
 

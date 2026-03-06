@@ -16,7 +16,7 @@ Every document-producing sub-skill should define:
 
 These sub-skills generate or update a target document or document set using repository evidence plus the selected shared template and local specialization notes.
 
-When the orchestrator is in `update` or `reconcile` mode, these sub-skills should also inspect the existing target document if present and preserve still-valid content whenever safe.
+When the orchestrator is in `update` or `reconcile` mode, follow the shared guidance in `update-reconcile-guidance.md`.
 
 ## Output Rules
 
@@ -35,8 +35,8 @@ Artifact names should align with the shared handoff contract in `sub-skill-hando
 Document-producing sub-skills should usually consume references in this order:
 
 1. shared conventions in `../../references/templates/common.md`
-2. the shared template for the target document type
-3. the existing target document when operating in `update` or `reconcile` mode
+2. the shared update/reconcile guidance in `../../references/contracts/update-reconcile-guidance.md` when applicable
+3. the shared template for the target document type
 4. the local specialization note for the sub-skill
 5. any extra local rules files only if they materially constrain generation or update behavior
 

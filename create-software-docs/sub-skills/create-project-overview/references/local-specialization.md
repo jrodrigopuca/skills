@@ -6,15 +6,13 @@ Use these inputs in order:
 
 1. shared conventions at `../../references/templates/common.md`
 2. shared document template at `../../references/templates/project-overview.md`
-3. the existing target document when operating in `update` or `reconcile` mode
-4. this local specialization note
+3. this local specialization note
 
 ## Local Adjustments
 
 - keep the summary shorter than the architecture overview
 - link only to documents that were actually generated inside `{scope}/docs/`
 - use the repository structure section as a scoped tree, not a full monorepo tree unless `{scope}` is the repo root
-- when updating, preserve valid high-level summaries and refresh only changed module, structure, or link sections
 
 ## Do Not Repeat
 
