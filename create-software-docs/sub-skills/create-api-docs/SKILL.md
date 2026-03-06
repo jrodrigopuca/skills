@@ -22,4 +22,4 @@ Generate `{scope}/docs/api-reference.md`.
 - Keep endpoint grouping aligned with the repository structure.
 - Include `Sources Inspected`.
 
-See the shared template at [../../references/templates/api-reference.md](../../references/templates/api-reference.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local references [references/endpoint-rules.md](references/endpoint-rules.md) and [references/template.md](references/template.md).
+See the shared template at [../../references/templates/api-reference.md](../../references/templates/api-reference.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), [references/endpoint-rules.md](references/endpoint-rules.md), and the local specialization note in `references/local-specialization.md`.

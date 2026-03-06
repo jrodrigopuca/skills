@@ -23,4 +23,4 @@ Generate `{scope}/docs/project-overview.md`.
 - Include `Scope`, `Confidence Note`, and `Sources Inspected`.
 - Use repository-relative paths that match the selected scope.
 
-See the shared template at [../../references/templates/project-overview.md](../../references/templates/project-overview.md) and the local specialization at [references/template.md](references/template.md).
+See the shared template at [../../references/templates/project-overview.md](../../references/templates/project-overview.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization note in `references/local-specialization.md`.

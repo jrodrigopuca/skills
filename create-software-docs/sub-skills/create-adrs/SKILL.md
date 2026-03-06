@@ -22,4 +22,4 @@ Generate one or more files under `{scope}/docs/decisions/`.
 - Prefer fewer strong ADRs over many weak ones.
 - Include `Sources Inspected` in every ADR.
 
-See the shared template at [../../references/templates/adr.md](../../references/templates/adr.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local references [references/madr-template.md](references/madr-template.md) and [references/evidence-policy.md](references/evidence-policy.md).
+See the shared template at [../../references/templates/adr.md](../../references/templates/adr.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), the local specialization note in `references/local-specialization.md`, and [references/evidence-policy.md](references/evidence-policy.md).

@@ -15,6 +15,17 @@ This folder contains the specialized skills used by the `create-software-docs` o
 9. `create-adrs`
 10. `validate-generated-docs`
 
+## Reference Contract
+
+Document-producing sub-skills should consume references in this order:
+
+1. shared conventions in `../references/templates/common.md`
+2. one document-specific shared template in `../references/templates/`
+3. one or more local specialization notes in the sub-skill `references/` folder
+4. any additional local rules files only when needed
+
+This keeps shared structure centralized and local behavior minimal.
+
 ## Purpose
 
 - use smaller, specialized prompts

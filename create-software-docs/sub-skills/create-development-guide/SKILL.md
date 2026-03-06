@@ -23,4 +23,4 @@ Generate `{scope}/docs/development-guide.md`.
 - If a step cannot be verified, label it `Needs confirmation`.
 - Include `Sources Inspected`.
 
-See the shared template at [../../references/templates/development-guide.md](../../references/templates/development-guide.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization at [references/template.md](references/template.md).
+See the shared template at [../../references/templates/development-guide.md](../../references/templates/development-guide.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization note in `references/local-specialization.md`.

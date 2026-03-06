@@ -22,4 +22,4 @@ Generate `{scope}/docs/data-model.md`.
 - Do not infer persistence if only transient types are present.
 - Include `Sources Inspected`.
 
-See the shared template at [../../references/templates/data-model.md](../../references/templates/data-model.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local references [references/erd-rules.md](references/erd-rules.md) and [references/template.md](references/template.md).
+See the shared template at [../../references/templates/data-model.md](../../references/templates/data-model.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), [references/erd-rules.md](references/erd-rules.md), and the local specialization note in `references/local-specialization.md`.

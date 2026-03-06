@@ -23,4 +23,4 @@ Generate `{scope}/docs/architecture.md`.
 - Keep naming aligned with actual modules, services, and integrations.
 - Include `Scope`, `Confidence Note`, and `Sources Inspected`.
 
-See the shared template at [../../references/templates/architecture.md](../../references/templates/architecture.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local references [references/template.md](references/template.md) and [references/diagrams.md](references/diagrams.md).
+See the shared template at [../../references/templates/architecture.md](../../references/templates/architecture.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), the local specialization note in `references/local-specialization.md`, and [references/diagrams.md](references/diagrams.md).

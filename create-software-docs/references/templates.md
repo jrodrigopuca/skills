@@ -7,6 +7,7 @@ Use only the shared template that matches the document being generated.
 ## Shared Conventions
 
 - [templates/common.md](templates/common.md)
+- [templates/contract.md](templates/contract.md)
 
 ## Document-Specific Shared Templates
 
@@ -25,8 +26,9 @@ Use only the shared template that matches the document being generated.
 Each sub-skill should consume:
 
 1. the shared conventions in [templates/common.md](templates/common.md)
-2. only its own document-specific shared template
-3. its local specialization notes, if needed
+2. the shared contract in [templates/contract.md](templates/contract.md)
+3. only its own document-specific shared template
+4. its local specialization notes, if needed
 
 Examples:
 

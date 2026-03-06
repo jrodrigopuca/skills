@@ -21,4 +21,4 @@ Generate `{scope}/docs/glossary.md`.
 - Avoid circular definitions.
 - Include `Sources Inspected`.
 
-See the shared template at [../../references/templates/glossary.md](../../references/templates/glossary.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization at [references/template.md](references/template.md).
+See the shared template at [../../references/templates/glossary.md](../../references/templates/glossary.md), the shared conventions at [../../references/templates/common.md](../../references/templates/common.md), and the local specialization note in `references/local-specialization.md`.
