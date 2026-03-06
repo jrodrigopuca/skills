@@ -8,12 +8,11 @@ Keep artifact names stable across the documentation workflow so that each sub-sk
 
 ## Structure of This Contract
 
-This contract is organized in three operational layers plus an examples appendix:
+This contract is organized in three operational layers:
 
 1. reusable artifact shapes shared across sub-skills
 2. top-level artifacts produced by each sub-skill stage
 3. escalation and flow rules that explain how items move through the pipeline
-4. examples appendix for canonical reference shapes and mappings
 
 ## 1. Reusable Artifact Shapes
 
@@ -289,7 +288,7 @@ Translation guidance:
 
 Structured item that can appear inside a validation or cleanup artifact.
 
-Fields:
+Core fields:
 
 - `candidateId` when a stable identifier already exists
 - `title`
@@ -299,6 +298,9 @@ Fields:
 - `evidence`
 - `recommendedStatus`
 - `trackingReason`
+
+Optional fields:
+
 - `currentHandling` when known
 - `clarificationNeeded` when applicable
 - `reEvaluateWhen` when applicable
@@ -332,6 +334,8 @@ Translation guidance:
 - `candidateId` may become the final issue identifier, or be converted into a stable document identifier such as `KI-001`.
 - `recommendedStatus` should become the initial issue status unless stronger downstream evidence justifies a different one.
 - `trackingReason`, `clarificationNeeded`, and `reEvaluateWhen` should be preserved in the final known issue entry instead of being collapsed into vague prose.
+- in `compact` tracking mode, keep only the core fields plus whichever optional fields materially improve future review.
+- do not invent optional lifecycle fields merely to fill out the shape.
 
 ## 2. Top-level Handoff Artifacts by Stage
 
@@ -437,6 +441,7 @@ Fields:
 
 - `targetPath`
 - `documentType`
+- `trackingMode` (`compact` or `full`) when applicable
 - `sourcesInspected` (as `Evidence Reference` entries)
 - `confidenceNote` when applicable
 - `openQuestions` or `needsConfirmation` when applicable
@@ -466,6 +471,11 @@ Use these boundaries consistently:
   - it is still relevant after reasonable validation and cleanup work
   - it affects understanding, operation, maintenance, architecture, or future delivery in a non-trivial way
   - it benefits from explicit status tracking, clarification tracking, or future re-evaluation
+
+For `compact` tracking mode, apply an extra filter:
+
+- prefer only the small set of persistent issues that a future reader truly needs to see again
+- leave lower-priority unresolved items as `remainingIssues` or normal validation findings when long-term tracking adds little value
 
 Do not create a known issue candidate for:
 
@@ -526,5 +536,5 @@ Prefer a remaining issue when:
 10. `validate-generated-docs` should add `knownIssueCandidates` only for persistent or track-worthy issues, not for every finding.
 11. `cleanup-and-review-docs` consumes generated or updated documents plus the validation artifact and produces a cleanup artifact.
 12. `cleanup-and-review-docs` should preserve, refine, apply, or drop cleanup candidates, emit structured remaining issues for unresolved items, and emit only the known issue candidates that still deserve tracking.
-13. `create-known-issues` consumes scope, validation, and cleanup findings and produces a known issues document artifact when applicable.
+13. `create-known-issues` consumes scope, validation, and cleanup findings plus the selected tracking mode, and produces a known issues document artifact when applicable.
 14. The orchestrator decides whether a final validation pass is required, and at which validation level.

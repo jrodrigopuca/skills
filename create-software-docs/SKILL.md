@@ -8,6 +8,8 @@ license: MIT
 
 Generate or update structured project documentation by coordinating specialized documentation sub-skills.
 
+For lightweight version history and maintenance notes, see [CHANGELOG.md](CHANGELOG.md).
+
 ## Overview
 
 This skill is the **orchestrator** for project documentation. It does not try to author every document directly. Instead, it:
@@ -79,117 +81,25 @@ These rules are mandatory across all sub-skills:
 7. **Validate before finishing.** Run the validation sub-skill before final cleanup and review.
 8. **Polish before delivery.** Run cleanup and review before considering the documentation complete.
 
-## Context Loading Strategy
+## Orchestration Policy
 
-Do not load the whole skill tree at once unless the model context is clearly large enough and the task truly requires it.
+Use [references/orchestration-policy.md](references/orchestration-policy.md) for planning-time policy.
 
-Prefer lazy loading by stage:
+That reference defines:
 
-### Scope analysis stage
+- context loading and lazy-loading boundaries by stage
+- downgrade rules when context, time, or repository size are constrained
+- validation levels: `minimal`, `standard`, and `full`
+- known-issues tracking modes: `compact` and `full`
+- the fast path for `simple` projects
 
-Load only:
+Default policy summary:
 
-- this orchestrator file
-- `sub-skills/analyze-project-scope/SKILL.md`
-- `references/contracts/non-document-subskill.md`
-- the relevant sections of `references/contracts/sub-skill-handoffs.md` for `Scope Analysis Artifact`
-- `sub-skills/analyze-project-scope/references/scope-rules.md`
-- `sub-skills/analyze-project-scope/references/evidence-model.md`
-
-### Document generation stage
-
-For one document-producing sub-skill, load only:
-
-- this orchestrator file
-- that sub-skill `SKILL.md`
-- `references/contracts/document-subskill.md`
-- `references/contracts/update-reconcile-guidance.md` when operating in `update` or `reconcile` mode
-- `references/templates/common.md`
-- the one shared template for that document type
-- the sub-skill local specialization note
-- only the extra local rules files that materially constrain that document type
-
-Do not load other document sub-skills during a single document-generation step unless cross-document consistency truly requires it.
-
-### Validation stage
-
-Load only:
-
-- this orchestrator file
-- `sub-skills/validate-generated-docs/SKILL.md`
-- `references/contracts/non-document-subskill.md`
-- the relevant artifact sections from `references/contracts/sub-skill-handoffs.md`
-- `sub-skills/validate-generated-docs/references/validation-rules.md`
-- `sub-skills/validate-generated-docs/references/output-checklist.md`
-- `references/quality-checklist.md`
-
-### Cleanup stage
-
-Load only:
-
-- this orchestrator file
-- `sub-skills/cleanup-and-review-docs/SKILL.md`
-- `references/contracts/non-document-subskill.md`
-- the relevant cleanup sections from `references/contracts/sub-skill-handoffs.md`
-- `sub-skills/cleanup-and-review-docs/references/cleanup-rules.md`
-- `sub-skills/cleanup-and-review-docs/references/editorial-checklist.md`
-- `references/quality-checklist.md`
-
-### Known-issues stage
-
-Load only:
-
-- this orchestrator file
-- `sub-skills/create-known-issues/SKILL.md`
-- `references/contracts/document-subskill.md`
-- `references/contracts/update-reconcile-guidance.md` when applicable
-- the relevant known-issues sections from `references/contracts/sub-skill-handoffs.md`
-- `references/templates/common.md`
-- `references/templates/known-issues.md`
-- `sub-skills/create-known-issues/references/local-specialization.md`
-- `sub-skills/create-known-issues/references/status-rules.md`
-
-### Hard constraint
-
-- Do not pre-load every template, every sub-skill, and the full handoff contract for each step.
-- Load only the files needed for the current stage and the current document type.
-- If a contract file is large, read only the sections relevant to the artifact being produced or consumed.
-
-## Downgrade Rules
-
-If context budget, time budget, or repository size makes the full workflow impractical, downgrade in this order:
-
-1. keep scope analysis mandatory
-2. keep core docs mandatory: `project-overview`, `architecture`, `development-guide`
-3. skip optional docs that have weak evidence or low user value in the current pass
-4. simplify validation to the most critical checks: scope, evidence, links, obvious speculation
-5. keep cleanup minimal and correctness-preserving
-6. generate `known-issues` only when there are clearly persistent, important findings worth tracking
-
-When downgrading:
-
-- prefer omitting low-confidence optional deliverables over producing shallow or speculative docs
-- prefer partial but accurate coverage over full but weak coverage
-- state which docs or checks were intentionally deferred
-- do not drop validation entirely
-
-If even the downgraded workflow does not fit the available context, produce only a scoped plan plus the highest-value core docs and explicitly mark the rest as deferred.
-
-## Validation Levels
-
-Choose one validation level for each validation pass.
-
-- `minimal` — verify scope boundaries, output paths, `Sources inspected`, confidence labeling, obvious broken links, obvious speculative sections, and core README/doc navigation
-- `standard` — default level; includes `minimal` plus applicable document-specific checks, cross-document terminology consistency, and structured artifact quality checks
-- `full` — includes `standard` plus exhaustive link review, deeper preserved-content verification in `update` or `reconcile` mode, and stricter review of diagrams, operational procedures, and known-issue escalation boundaries
-
-Select the level like this:
-
-- use `minimal` for downgraded runs, fast-path simple projects, or final re-validation after purely editorial cleanup
-- use `standard` by default for normal generation or update workflows
-- use `full` for complex scopes, high-risk docs, heavy `reconcile` work, or when many preserved sections must be re-verified against repository evidence
-
-When validation is not `full`, explicitly state which deeper checks were deferred.
+- load only the files needed for the current stage
+- keep scope analysis and core docs mandatory when downgrading
+- use `standard` validation by default
+- use `compact` known-issues tracking for simple or minimal workflows unless stronger continuity needs exist
+- use the simple-project fast path only when scope analysis clearly supports it
 
 ## Orchestrator Workflow
 
@@ -277,8 +187,7 @@ Parallelization rule:
 
 Validation rule:
 
-- select `minimal`, `standard`, or `full` validation before running `validate-generated-docs`
-- use `standard` by default, `minimal` for fast-path or downgraded runs, and `full` for complex or high-risk scopes
+- select `minimal`, `standard`, or `full` validation before running `validate-generated-docs`, following [references/orchestration-policy.md](references/orchestration-policy.md)
 - if cleanup or known-issues generation performs meaningful structural edits, run `validate-generated-docs` once more
 - if cleanup makes only editorial or formatting changes, a `minimal` final pass is enough
 
@@ -286,25 +195,7 @@ In `update` or `reconcile` mode, run only the sub-skills needed for impacted doc
 
 ### 4.1 Fast Path for Simple Projects
 
-If scope analysis classifies the project as `simple`, prefer this reduced path unless strong evidence justifies more:
-
-1. `analyze-project-scope`
-2. `create-project-overview`
-3. `create-architecture-docs` with only the simplest evidenced sections and diagrams
-4. `create-development-guide`
-5. `validate-generated-docs` with a minimal but evidence-focused pass
-6. `cleanup-and-review-docs` with a minimal editorial pass
-
-Add optional steps only when directly evidenced and clearly valuable:
-
-- `create-api-docs` if an API is central and obvious
-- `create-data-model-docs` if persistence is central and obvious
-- `create-runbooks` only when operational procedures are clearly present
-- `create-glossary` only when terminology is non-trivial even in a simple scope
-- `create-adrs` only when a real hard-to-reverse decision is visible
-- `create-known-issues` only when persistent issues clearly deserve tracking
-
-The fast path should reduce instruction and execution cost, not reduce factual quality.
+If scope analysis classifies the project as `simple`, apply the fast path defined in [references/orchestration-policy.md](references/orchestration-policy.md).
 
 ### 4.2 Coordinate Handoffs
 
@@ -316,6 +207,7 @@ Use the shared handoff contract to coordinate the workflow:
 - pass `Document Generation Artifact` outputs into `validate-generated-docs`
 - pass the `Validation Artifact` into `cleanup-and-review-docs`
 - pass the `Validation Artifact` and `Cleanup Artifact` into `create-known-issues` when persistent issues remain worth tracking
+- pass the selected known-issues tracking mode into `create-known-issues`
 - request a final validation pass when cleanup or known-issues generation reports meaningful edits
 
 In `update` or `reconcile` mode, also pass forward the knowledge of which documents already existed and which sections were intentionally preserved.
@@ -382,6 +274,8 @@ Run when validation, cleanup, or scope analysis surfaces unresolved issues, acce
 
 Do not run it for transient editorial noise or for minor findings that were fully fixed during validation and cleanup.
 
+Use `compact` tracking by default for `simple` scopes or downgraded workflows, and `full` tracking for `complex`, `reconcile`, or history-sensitive cases.
+
 ### `validate-generated-docs`
 
 Always run before final cleanup, and run again after cleanup if needed.
@@ -417,6 +311,7 @@ Use the shared references when they apply:
 - [references/diagrams.md](references/diagrams.md)
 - [references/contracts/document-subskill.md](references/contracts/document-subskill.md)
 - [references/contracts/non-document-subskill.md](references/contracts/non-document-subskill.md)
+- [references/orchestration-policy.md](references/orchestration-policy.md)
 - [references/contracts/update-reconcile-guidance.md](references/contracts/update-reconcile-guidance.md)
 - [references/contracts/rules-and-checklists.md](references/contracts/rules-and-checklists.md)
 - [references/contracts/sub-skill-handoffs.md](references/contracts/sub-skill-handoffs.md)

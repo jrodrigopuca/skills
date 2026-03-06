@@ -8,6 +8,7 @@ license: MIT
 
 ## Responsibilities
 
+- support `compact` and `full` tracking modes
 - consolidate unresolved or consciously accepted issues detected during analysis, validation, cleanup, or manual review
 - distinguish between newly detected issues, accepted limitations, deferred work, and resolved items that remain historically relevant
 - preserve issue status and future clarification or re-evaluation needs
@@ -21,6 +22,7 @@ license: MIT
 - validation findings, especially unresolved issues and `knownIssueCandidates`
 - cleanup findings, especially structured `remainingIssues`, surviving `knownIssueCandidates`, and follow-up validation needs
 - scope analysis findings when context gaps or partial repository boundaries exist
+- the selected tracking mode: `compact` or `full`
 - repository evidence supporting each issue entry
 - the existing `{scope}/docs/known-issues.md` when operating in `update` or `reconcile` mode
 
@@ -30,11 +32,12 @@ Produce a **Document Generation Artifact** for known issues containing at least:
 
 - `targetPath`: `{scope}/docs/known-issues.md`
 - `documentType`: `known-issues`
+- `trackingMode`
 - `sourcesInspected`
 - `confidenceNote`
 - `openQuestions` or `needsConfirmation` when applicable
 
-The generated document must track per-item status and future clarification or re-evaluation notes.
+The generated document must track per-item status. Clarification and re-evaluation notes are mandatory only when they materially help future review or when `full` tracking mode is selected.
 
 In `update` or `reconcile` mode, preserve existing issue identifiers and update status, evidence, and review notes instead of recreating the issue list from scratch whenever possible.
 
@@ -49,6 +52,9 @@ In `update` or `reconcile` mode, preserve existing issue identifiers and update 
 - Prefer the cleanup artifact over the validation artifact when deciding whether a candidate still needs long-term tracking.
 - Treat a `remainingIssue` as input context, but escalate it into a final known issue only when it truly needs status tracking or future re-evaluation.
 - If a previously tracked issue is no longer evidenced, update its status or resolution context instead of silently dropping it.
+- In `compact` mode, prefer a short high-value list over exhaustive lifecycle detail.
+- In `compact` mode, keep `currentHandling`, `clarificationNeeded`, and `reEvaluateWhen` only when they materially improve future usefulness.
+- In `full` mode, preserve richer historical continuity and future review notes when they already exist or clearly matter.
 
 ## References
 

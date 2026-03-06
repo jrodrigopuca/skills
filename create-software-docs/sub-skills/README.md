@@ -4,6 +4,8 @@ This folder contains the specialized skills used by the `create-software-docs` o
 
 Read the orchestrator first for the full workflow, activation rules, and operating modes.
 
+For context loading, downgrade behavior, validation levels, and the simple-project fast path, use `../references/orchestration-policy.md`.
+
 ## Execution Order
 
 1. `analyze-project-scope`

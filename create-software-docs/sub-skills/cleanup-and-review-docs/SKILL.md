@@ -41,6 +41,7 @@ Clean up and review everything generated under `{scope}/docs/`.
 - Resolve `cleanupCandidates` explicitly as applied, skipped, or escalated when feasible.
 - Use structured `remainingIssues` instead of vague closing notes when unresolved items survive cleanup.
 - Do not assume a deferred validation check was already covered; preserve that limitation in cleanup output when it affects confidence.
+- In simple or downgraded workflows, prefer leaving lower-priority items as `remainingIssues` instead of escalating them into long-lived `knownIssueCandidates`.
 
 ## Expected Output
 

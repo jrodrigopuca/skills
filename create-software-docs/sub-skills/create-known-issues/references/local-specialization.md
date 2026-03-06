@@ -16,6 +16,8 @@ Use these inputs in order:
 - preserve an issue entry when the team has already acknowledged it and assigned a different status
 - use future clarification fields when the issue cannot be fully resolved from repository evidence alone
 - when updating, preserve stable issue identifiers and revise status, evidence, and review notes instead of recreating entries unnecessarily
+- in `compact` mode, prefer concise entries and omit optional lifecycle detail that does not improve future usefulness
+- in `full` mode, preserve richer history and review notes when they already exist or clearly matter
 
 ## Do Not Repeat
 

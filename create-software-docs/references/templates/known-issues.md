@@ -9,8 +9,27 @@ Target file: `{scope}/docs/known-issues.md`
 - `## Confidence Note`
 - `## Status Model`
 - `## Known Issues`
-- `## Future Clarifications`
+- `## Future Clarifications` when at least one tracked issue needs explicit clarification or re-evaluation
 - `## Sources Inspected`
+
+## Tracking Modes
+
+### `compact`
+
+Use for `simple` scopes or downgraded runs.
+
+- keep only the most important persistent issues
+- keep entries concise
+- include clarification and re-evaluation notes only when they materially help future review
+- omit `## Future Clarifications` entirely when no issue needs it
+
+### `full`
+
+Use for `complex`, history-sensitive, or `reconcile` workflows.
+
+- preserve richer lifecycle detail when it exists or clearly adds value
+- retain clarification and re-evaluation notes when needed
+- keep stronger continuity with existing issue history
 
 ## Template Skeleton
 
@@ -49,6 +68,8 @@ Target file: `{scope}/docs/known-issues.md`
 - Detected by: `[validation | cleanup | analysis | manual review]`
 - Tracking Reason: `[accepted limitation | unresolved risk | deferred work | monitoring item | clarification gap]`
 
+In `compact` mode, keep the fields above that materially help the reader. `Category`, `Affects`, or `Tracking Reason` may be omitted when the summary and evidence already make the issue clear.
+
 **Summary**
 
 [What the issue is and why it matters]
@@ -76,6 +97,8 @@ Target file: `{scope}/docs/known-issues.md`
 | Issue ID | Clarification Needed | Re-evaluate When |
 | -------- | -------------------- | ---------------- |
 | KI-001   | [pending detail]     | [trigger]        |
+
+In `compact` mode, omit this section when no item needs explicit clarification or re-evaluation tracking.
 
 ## Sources Inspected
 

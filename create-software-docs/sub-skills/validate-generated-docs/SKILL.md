@@ -59,6 +59,7 @@ Produce a **Validation Artifact** containing:
 - Use structured `brokenLinks`, `missingEvidenceNotes`, and `speculativeSections` instead of ambiguous summaries.
 - Use structured `cleanupCandidates` instead of vague prose when the issue is expected to be handled during cleanup.
 - Do not promote every finding into `knownIssueCandidates`; use that field only for evidence-backed issues that should remain visible after the current pass.
+- In `minimal` validation or `simple` scopes, emit `knownIssueCandidates` only for the small set of persistent issues that materially affect understanding, operation, maintenance, or future review.
 - Do not claim full coverage when running `minimal` or `standard`; record deeper checks as `deferredChecks` when they were intentionally skipped.
 - Apply validation levels like this:
   - `minimal` — check scope, output paths, evidence labels, obvious link failures, obvious speculative sections, and core navigation

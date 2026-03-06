@@ -38,6 +38,12 @@ Define stable statuses for known issue entries so that issues can be re-evaluate
 - start with `monitoring` when the issue is not actionable yet but should stay visible for future change detection
 - start with `needs-clarification` when the issue is worth tracking but the current evidence is incomplete
 
+### Compact Mode Guidance
+
+- in `compact` mode, prefer the simplest status that accurately communicates the issue state
+- use `monitoring` only when future observation is materially important; otherwise prefer `open`, `known`, `accepted`, `deferred`, or `needs-clarification`
+- avoid preserving long resolved history in `compact` mode unless the existing known-issues document already depends on that continuity
+
 ## Constraints
 
 - do not mark an issue `resolved` without evidence or an explicit documented decision

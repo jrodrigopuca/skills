@@ -73,6 +73,7 @@ Apply only to the documents that were actually generated.
 - [ ] Each issue has an explicit status.
 - [ ] Each issue explains why it is tracked instead of being treated as a normal validation note or cleanup-only fix.
 - [ ] Future clarification or re-evaluation notes are present when needed.
+- [ ] Tracking detail matches the selected mode: concise in `compact`, richer continuity in `full`.
 - [ ] Accepted or deferred issues are preserved instead of silently dropped.
 
 ## 3. Validation Artifact Checks
