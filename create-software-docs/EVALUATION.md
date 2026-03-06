@@ -1,26 +1,26 @@
 # Evaluación: `create-software-docs`
 
 > Evaluación inicial: 2026-03-06
-> Re-evaluación post-cambios: 2026-03-06
-> Archivos: 56 markdown (excluyendo este archivo)
-> Tamaño total actual: ~134 KB / ~3,784 líneas
+> Última revisión: 2026-03-06 (3ª pasada, post v3.2)
+> Archivos: 58 markdown (excluyendo este archivo)
+> Tamaño total actual: ~143 KB / ~3,953 líneas
 
 ---
 
 ## Resumen ejecutivo
 
-| Dimensión    | Inicial | Actual     | Comentario                                                                                |
-| ------------ | ------- | ---------- | ----------------------------------------------------------------------------------------- |
-| Completitud  | 9/10    | **9.5/10** | Se añadieron downgrade rules, validation levels, parallelization guidance                 |
-| Contexto LLM | 6/10    | **8/10**   | Context Loading Strategy + lazy loading + handoff parcial resuelven el problema principal |
-| Performance  | 7.5/10  | **8.5/10** | Fast path + parallelization + validation levels son mejoras materiales                    |
-| Diseño       | 8.5/10  | **9/10**   | Centralización de update/reconcile + validation levels bien integrados                    |
+| Dimensión    | Inicial | Rev. 2 | Rev. 3 (actual) | Comentario                                                                                            |
+| ------------ | ------- | ------ | --------------- | ----------------------------------------------------------------------------------------------------- |
+| Completitud  | 9/10    | 9.5/10 | **9.8/10**      | Todos los pendientes anteriores resueltos; solo queda el solapamiento de 3 capas como trade-off menor |
+| Contexto LLM | 6/10    | 8/10   | **8.5/10**      | Orchestrator reducido -4.6 KB, política extraída a referencia de planning, tokens/paso ~7,500         |
+| Performance  | 7.5/10  | 8.5/10 | **9/10**        | Compact/full modes para known issues + orchestrator más ligero reducen overhead efectivo              |
+| Diseño       | 8.5/10  | 9/10   | **9.5/10**      | Separación orchestrator vs. policy + CHANGELOG + compact mode = diseño maduro y bien estratificado    |
 
 ---
 
-## 1. Completitud — 9.5/10
+## 1. Completitud — 9.8/10
 
-La skill está prácticamente completa. Cubre:
+La skill cubre todo lo esperado de un orquestador de documentación de software:
 
 - Orquestación con workflow claro de 12 sub-skills
 - 3 modos operativos (`generate`, `update`, `reconcile`)
@@ -30,71 +30,85 @@ La skill está prácticamente completa. Cubre:
 - Quality checklist, diagram patterns, evidence model
 - Reglas de escalación (validation finding → cleanup candidate → remaining issue → known issue)
 - Especializaciones locales por sub-skill
-- ~~No hay guía de "context budget"~~ — **Resuelto.** Se añadió `## Context Loading Strategy` con lazy loading por etapa y `### Hard constraint`.
-- ~~No hay criterio de abort/downgrade~~ — **Resuelto.** Se añadió `## Downgrade Rules` con orden de degradación explícito.
-- ~~No hay versionado~~ — **Pendiente.** No se añadió nota de versión ni compatibilidad.
+- ~~No hay guía de "context budget"~~ — **Resuelto.** Context Loading Strategy con lazy loading por etapa extraída a `orchestration-policy.md`.
+- ~~No hay criterio de abort/downgrade~~ — **Resuelto.** Downgrade Rules con orden de degradación explícito en `orchestration-policy.md`.
+- ~~No hay versionado~~ — **Resuelto.** Se añadió `CHANGELOG.md` con historial ligero de versiones (1.x → 2.x → 3.0 → 3.1 → 3.2).
+- Modos de tracking `compact` / `full` para known issues, bien integrados en orchestrator, policy, sub-skill y template.
+- Validation levels (`minimal`, `standard`, `full`) con propagación de `deferredChecks`.
+- Fast path para proyectos simples.
+- Paralelización controlada para documentos opcionales.
+
+### Único gap residual
+
+Las tres capas de referencia (`common.md` → template específico → local specialization) siguen existiendo. El solapamiento real es menor que antes gracias a la centralización de update/reconcile y al adelgazamiento de local specializations, pero la cadena sigue siendo una decisión de diseño deliberada, no un problema funcional.
 
 ---
 
-## 2. Optimización para ventana de contexto — 8/10
+## 2. Optimización para ventana de contexto — 8.5/10
 
 ### Métricas de tamaño
 
-| Concepto                              | Inicial  | Actual   | Cambio           |
-| ------------------------------------- | -------- | -------- | ---------------- |
-| Total skill (sin EVALUATION.md)       | ~133 KB  | ~134 KB  | +1 KB            |
-| `sub-skill-handoffs.md`               | 22 KB    | 19 KB    | **-3 KB**        |
-| Orchestrator `SKILL.md`               | 12 KB    | 19.4 KB  | +7.5 KB          |
-| `sub-skills/README.md`                | 5.5 KB   | 2.8 KB   | **-2.7 KB**      |
-| `common.md`                           | 1.6 KB   | 1.5 KB   | -0.1 KB          |
-| Nuevo: `update-reconcile-guidance.md` | —        | 1.7 KB   | +1.7 KB          |
-| Sub-skill SKILL.md (promedio)         | ~2.8 KB  | ~2.6 KB  | **-0.2 KB c/u**  |
-| Local specializations (promedio)      | ~0.83 KB | ~0.68 KB | **-0.15 KB c/u** |
-| `diagrams.md`                         | ~7 KB    | ~7 KB    | sin cambio       |
+| Concepto                         | Inicial  | Rev. 2   | Rev. 3 (actual) | Cambio vs Rev. 2           |
+| -------------------------------- | -------- | -------- | --------------- | -------------------------- |
+| Total skill (sin EVALUATION.md)  | ~133 KB  | ~134 KB  | **~143 KB**     | +9 KB (policy + changelog) |
+| Orchestrator `SKILL.md`          | 12 KB    | 19.4 KB  | **14.8 KB**     | **-4.6 KB**                |
+| Nuevo: `orchestration-policy.md` | —        | —        | **8.0 KB**      | +8.0 KB (solo planning)    |
+| Nuevo: `CHANGELOG.md`            | —        | —        | **1.7 KB**      | +1.7 KB (no se carga)      |
+| `sub-skill-handoffs.md`          | 22 KB    | 19 KB    | 19.3 KB         | sin cambio material        |
+| `sub-skills/README.md`           | 5.5 KB   | 2.8 KB   | 2.9 KB          | sin cambio material        |
+| `common.md`                      | 1.6 KB   | 1.5 KB   | 1.5 KB          | sin cambio                 |
+| `update-reconcile-guidance.md`   | —        | 1.7 KB   | 1.7 KB          | sin cambio                 |
+| Sub-skill SKILL.md (promedio)    | ~2.8 KB  | ~2.6 KB  | ~2.6 KB         | sin cambio                 |
+| Local specializations (promedio) | ~0.83 KB | ~0.68 KB | ~0.68 KB        | sin cambio                 |
+| `diagrams.md`                    | ~7 KB    | ~7 KB    | ~7 KB           | sin cambio                 |
+| `known-issues.md` (template)     | —        | ~5.6 KB  | ~5.6 KB         | sin cambio                 |
 
-El peso neto total apenas subió (~1 KB), pero la distribución mejoró sustancialmente. El overhead creció en el orchestrator (que se lee siempre) pero se redujo en los archivos que se cargan por paso.
+El total creció ~9 KB, pero el crecimiento proviene de archivos que **no se cargan por paso**: `orchestration-policy.md` se lee solo en planificación, `CHANGELOG.md` no se carga nunca en ejecución. El archivo que sí se carga siempre (orchestrator) se redujo 4.6 KB.
 
 ### Problemas detectados y estado
 
 1. **`sub-skill-handoffs.md` demasiado grande con Examples Appendix duplicado.**
-   - ~~645 líneas con ~150 líneas de ejemplos repetidos en Sección 4~~ — **Resuelto.** El contenido duplicado fue eliminado. Archivo bajó de 22 KB a 19 KB.
-   - **Pendiente menor:** La descripción interna (`## Structure of This Contract`) aún menciona "plus an examples appendix" y "4. examples appendix..." pero la sección ya no existe. Este vestigio debe limpiarse.
+   - ~~645 líneas con ~150 líneas de ejemplos repetidos en Sección 4~~ — **Resuelto.** Contenido eliminado, archivo bajó de 22 KB a 19 KB.
+   - ~~Vestigio en `## Structure of This Contract` mencionando "plus an examples appendix"~~ — **Resuelto.** La descripción ahora dice "three operational layers" sin mencionar appendix.
 
 2. **Redundancia sistémica de update/reconcile (~25+ repeticiones).**
-   - ~~La frase "preserve still-valid content when operating in update or reconcile mode" aparece en cada sub-skill, orchestrator, contratos y templates~~ — **Resuelto.** Se creó `references/contracts/update-reconcile-guidance.md` (~1.7 KB) como referencia canónica. Las frases repetitivas fueron removidas de todos los sub-skills individuales, local specializations, y `common.md`.
+   - **Resuelto.** `update-reconcile-guidance.md` como referencia canónica. Prosa removida de ~12 archivos.
 
 3. **Duplicación orchestrator ↔ sub-skills/README.md.**
-   - ~~Ambos listan el orden de ejecución, roles y flujo de artefactos~~ — **Resuelto.** El README fue reducido de 5.5 KB a 2.8 KB. Ahora es un índice ligero que referencia al orchestrator como fuente canónica.
+   - **Resuelto.** README reducido a 2.9 KB, referencia al orchestrator como fuente canónica. Además ahora referencia `orchestration-policy.md` para context loading y downgrade.
 
 4. **Tres capas de referencia con solapamiento.**
-   - `common.md` → template específico → local specialization presentaban solapamiento. — **Parcialmente mitigado.** Los local specialization files fueron adelgazados y `common.md` delega a `update-reconcile-guidance.md`. Aún existe la cadena de tres capas, pero el solapamiento real es menor.
+   - **Parcialmente mitigado.** Solapamiento real reducido. Es un trade-off de diseño aceptable.
 
 5. **Pipeline de known issues sobre-ingeniado.**
-   - 5 shapes estructurados con ~8-12 campos cada uno y "translation guidance" para cada transformación. — **Sin cambio.** La Context Loading Strategy mitiga el impacto (no se cargan todos los shapes a la vez), pero sigue siendo más complejo de lo necesario para proyectos simples.
+   - **Mitigado.** Los modos `compact` / `full` permiten que proyectos simples usen entradas concisas con subconjunto de campos. Los shapes siguen existiendo en `sub-skill-handoffs.md` pero `compact` mode filtra activamente qué se produce.
 
 ### Estimación de tokens por paso de ejecución
 
-| Archivo                        | Inicial     | Actual                          |
-| ------------------------------ | ----------- | ------------------------------- |
-| Orchestrator SKILL.md          | ~3,000      | ~4,900                          |
-| Sub-skill SKILL.md             | ~750        | ~650                            |
-| `common.md`                    | ~400        | ~380                            |
-| Template específico            | ~800        | ~800                            |
-| Local specialization           | ~200        | ~170                            |
-| `diagrams.md` (arq.)           | ~1,800      | ~1,800                          |
-| `sub-skill-handoffs.md`        | ~5,500      | **~0** (no se carga completo)   |
-| `update-reconcile-guidance.md` | —           | ~425 (solo si update/reconcile) |
-| **Total por paso (generate)**  | **~12,500** | **~8,700**                      |
-| **Total por paso (update)**    | **~12,500** | **~9,125**                      |
+| Archivo                        | Inicial     | Rev. 2                       | Rev. 3 (actual)              |
+| ------------------------------ | ----------- | ---------------------------- | ---------------------------- |
+| Orchestrator SKILL.md          | ~3,000      | ~4,900                       | **~3,700**                   |
+| `orchestration-policy.md`      | —           | —                            | **~0** (solo planning)       |
+| Sub-skill SKILL.md             | ~750        | ~650                         | ~650                         |
+| `common.md`                    | ~400        | ~380                         | ~380                         |
+| Template específico            | ~800        | ~800                         | ~800                         |
+| Local specialization           | ~200        | ~170                         | ~170                         |
+| `diagrams.md` (arq.)           | ~1,800      | ~1,800                       | ~1,800                       |
+| `sub-skill-handoffs.md`        | ~5,500      | **~0** (lazy)                | **~0** (lazy)                |
+| `update-reconcile-guidance.md` | —           | ~425 (solo update/reconcile) | ~425 (solo update/reconcile) |
+| **Total por paso (generate)**  | **~12,500** | **~8,700**                   | **~7,500**                   |
+| **Total por paso (update)**    | **~12,500** | **~9,125**                   | **~8,125**                   |
 
-La mejora clave: el handoff contract ya no necesita cargarse completo gracias a la Context Loading Strategy que indica cargar solo las secciones relevantes. Esto ahorra ~5.5K tokens por paso en el caso ideal.
+La mejora clave en esta revisión: la extracción de Context Loading Strategy, Downgrade Rules, Validation Levels, Known-Issues Tracking Modes y Fast Path a `orchestration-policy.md` redujo el orchestrator de ~4,900 a ~3,700 tokens/paso, ahorrando ~1,200 tokens adicionales por paso.
 
-- Para modelos con 128K-200K de contexto: cómodo.
-- Para modelos con 32K de contexto: ahora manejable (antes problemático).
+**Planning step**: ~3,700 (orchestrator) + ~2,000 (policy) + ~620 (scope analysis) = **~6,320 tokens** — se carga una sola vez.
+
+- Para modelos con 128K-200K: muy cómodo.
+- Para modelos con 32K: manejable sin dificultad (antes problemático).
 
 ---
 
-## 3. Performance / Eficiencia de ejecución — 8.5/10
+## 3. Performance / Eficiencia de ejecución — 9/10
 
 ### Fortalezas
 
@@ -104,18 +118,19 @@ La mejora clave: el handoff contract ya no necesita cargarse completo gracias a 
 - Las activation rules evitan generar documentos que no aplican
 - Los contratos (`document-subskill.md`, `non-document-subskill.md`) normalizan expectativas sin rigidez excesiva
 - La separación de `validate` → `cleanup` → `known-issues` es conceptualmente limpia
-- ~~No hay instrucción de paralelización~~ — **Resuelto.** El orchestrator ahora permite batch paralelo para documentos opcionales post-core con reglas claras de cuándo es seguro.
-- ~~No hay fast path para proyectos simples~~ — **Resuelto.** Se añadió `### 4.1 Fast Path for Simple Projects` con 6 pasos base, expansión opcional solo cuando hay evidencia clara.
-- ~~12 pasos secuenciales sin alternativa~~ — **Mitigado.** El fast path reduce a 6 pasos para proyectos simples. La paralelización del batch opcional reduce el tiempo efectivo para proyectos medianos/complejos.
+- ~~No hay instrucción de paralelización~~ — **Resuelto.** Batch paralelo post-core con reglas de seguridad.
+- ~~No hay fast path para proyectos simples~~ — **Resuelto.** Fast path de 6 pasos base en `orchestration-policy.md`.
+- ~~12 pasos secuenciales sin alternativa~~ — **Mitigado.** Fast path + paralelización reducen pasos efectivos.
+- ~~Orchestrator pesado (~19.4 KB) cargado en cada paso~~ — **Resuelto.** Reducido a 14.8 KB; política de planificación en `orchestration-policy.md` cargada solo una vez.
+- `compact` / `full` modes para known issues permiten escalar la complejidad del pipeline al tipo de proyecto.
 
-### Debilidades residuales
+### Debilidad residual
 
-- El re-validation condicional ("if cleanup performs meaningful edits, run validate again") sigue pudiendo crear loops, aunque ahora la elección de validation level (`minimal` para re-validación editorial) lo hace más controlable.
-- El orchestrator SKILL.md creció a ~19.4 KB y se carga en cada paso. Parte de ese contenido (Context Loading Strategy, Downgrade Rules, Validation Levels) podría extraerse a una referencia separada que solo se cargue en la fase de planificación.
+- El re-validation condicional ("if cleanup performs meaningful edits, run validate again") sigue pudiendo crear loops, aunque la elección de validation level (`minimal` para re-validación editorial) lo hace controlable. Este es un trade-off de diseño razonable.
 
 ---
 
-## 4. Calidad de diseño — 9/10
+## 4. Calidad de diseño — 9.5/10
 
 ### Fortalezas consolidadas
 
@@ -127,33 +142,46 @@ La mejora clave: el handoff contract ya no necesita cargarse completo gracias a 
 - El approach de `update`/`reconcile` es sofisticado y práctico
 - Centralización de reglas update/reconcile en `update-reconcile-guidance.md` elimina repetición sistémica
 - Validation levels (`minimal`, `standard`, `full`) bien integrados en validate, cleanup y orchestrator
-- El Validation Artifact ahora incluye `validationLevel` y `deferredChecks`, propagando awareness de cobertura real
-- Cleanup ahora consume el validation level y deferred checks, evitando asumir cobertura que no existió
+- El Validation Artifact incluye `validationLevel` y `deferredChecks`, propagando awareness de cobertura real
+- Cleanup consume validation level y deferred checks, evitando asumir cobertura que no existió
+- **Separación clara entre orchestrator (workflow) y policy (planning-time decisions)** — el orchestrator se enfoca en qué hacer y en qué orden; la política en cuándo y cómo adaptar
+- **CHANGELOG.md** proporciona trazabilidad de cambios sin sobre-ingeniería
+- **Compact/full tracking modes** bien integrados en todo el pipeline: orchestrator → policy → sub-skill → template → local specialization → handoff contract
 
 ---
 
-## Mejoras implementadas
+## Historial de mejoras
 
-| #   | Recomendación                                         | Estado                                                                              |
-| --- | ----------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| 1   | Eliminar Examples Appendix de `sub-skill-handoffs.md` | **Parcial** — contenido eliminado, vestigio en TOC pendiente                        |
-| 2   | Reducir `sub-skills/README.md`                        | **Cumplida** — de 5.5 KB a 2.8 KB, sin duplicación                                  |
-| 3   | Centralizar reglas update/reconcile                   | **Cumplida** — nuevo `update-reconcile-guidance.md`, prosa removida de ~12 archivos |
-| 4   | Añadir Context Loading Strategy                       | **Cumplida** — 5 etapas con archivos explícitos + hard constraint + downgrade rules |
-| 5   | Fast path para proyectos simples                      | **Cumplida** — 6 pasos base con expansión condicional                               |
+| #   | Recomendación                                         | Estado final                                                                           |
+| --- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 1   | Eliminar Examples Appendix de `sub-skill-handoffs.md` | **Cumplida** — contenido y vestigio en TOC eliminados                                  |
+| 2   | Reducir `sub-skills/README.md`                        | **Cumplida** — de 5.5 KB a 2.9 KB, sin duplicación                                     |
+| 3   | Centralizar reglas update/reconcile                   | **Cumplida** — `update-reconcile-guidance.md`, prosa removida de ~12 archivos          |
+| 4   | Añadir Context Loading Strategy                       | **Cumplida** — extraída a `orchestration-policy.md` con lazy loading + hard constraint |
+| 5   | Fast path para proyectos simples                      | **Cumplida** — 6 pasos base con expansión condicional en `orchestration-policy.md`     |
 
-### Mejoras adicionales (no solicitadas)
+### Mejoras adicionales implementadas a lo largo de las iteraciones
 
-- **Validation Levels**: tres niveles (`minimal`, `standard`, `full`) con criterios claros y propagación de `deferredChecks`
+- **Validation Levels**: `minimal`, `standard`, `full` con propagación de `deferredChecks`
 - **Parallelization rules**: batch paralelo post-core con reglas de seguridad
 - **Cleanup awareness**: consume validation level y deferred checks
 - **Validation Artifact ampliado**: incluye `validationLevel` y `deferredChecks`
+- **Orchestration policy extraction**: separación de workflow vs. planning-time policy
+- **CHANGELOG.md**: versionado ligero (1.x → 3.2)
+- **Compact/full known-issues modes**: tracking escalable según complejidad del proyecto
 
 ---
 
-## Pendientes
+## Pendientes y observaciones menores
 
-1. **Vestigio en `sub-skill-handoffs.md`:** `## Structure of This Contract` aún menciona "plus an examples appendix" y "4. examples appendix for canonical reference shapes and mappings" pero la sección ya no existe. Limpiar.
-2. **Orchestrator pesado (~19.4 KB).** Es el archivo que se carga en cada paso. Evaluar extraer Context Loading Strategy, Downgrade Rules, y Validation Levels a `references/orchestration-policy.md` para mantener el orchestrator por debajo de ~12 KB y cargar la política solo en la fase de planificación.
-3. **Pipeline de known issues sin simplificar.** 5 shapes estructurados con 8-12 campos cada uno. La Context Loading Strategy mitiga el impacto, pero sigue siendo más complejo de lo necesario para proyectos simples.
-4. **Sin versionado.** No hay nota de versión ni compatibilidad en la skill.
+Todos los pendientes identificados en revisiones anteriores fueron resueltos. Las observaciones restantes son trade-offs de diseño conscientes, no defectos:
+
+1. **Tres capas de referencia.** `common.md` → template → local specialization sigue existiendo. El solapamiento real es menor tras la centralización de update/reconcile. Es una decisión de diseño que prioriza modularidad y reutilización sobre mínimo absoluto de archivos.
+
+2. **`known-issues.md` template es el más pesado (5.6 KB).** Incluye el candidate translation example como shape reference. En `compact` mode esto es más template del necesario, pero el overhead es marginal (~1,400 tokens extra una sola vez cuando se genera known issues).
+
+3. **`sub-skill-handoffs.md` sigue siendo 19 KB.** Es el archivo más grande, pero la lazy loading strategy (cargar solo secciones relevantes por paso) mitiga efectivamente su impacto. No se carga completo en ningún paso.
+
+4. **Re-validation loop teórico.** El condicional "run validate again after cleanup if meaningful edits" tiene potencial de loop, pero `minimal` validation para re-pases editoriales lo hace controlable en la práctica.
+
+Ninguno de estos puntos requiere acción inmediata. La skill está en un estado maduro y consistente.
