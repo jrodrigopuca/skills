@@ -2,6 +2,8 @@
 
 Quick reference for linking build errors to official documentation. This file maps error codes to their official documentation URLs - detailed solutions should come from the official docs, not this skill.
 
+**Load this file:** During analyze step (always needed for documentation linking)
+
 ---
 
 ## TypeScript Errors

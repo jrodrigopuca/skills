@@ -1,5 +1,7 @@
 # Build Report Examples
 
+**Load this file:** Never (training examples only - used during skill development/updates)
+
 Complete examples showing how to structure reports that **link to official documentation** instead of duplicating solutions.
 
 ---

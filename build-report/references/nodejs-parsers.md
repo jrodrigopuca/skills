@@ -2,6 +2,8 @@
 
 Detailed parsing strategies for common Node.js build tools output formats.
 
+**Load this file:** Only when custom/unknown build tool detected or parsing fails. The parse sub-skill handles standard tools (TypeScript, ESLint, Webpack, Vite) without this reference. Load for advanced regex patterns, edge cases, and extensibility guide.
+
 ---
 
 ## TypeScript Compiler (tsc)
