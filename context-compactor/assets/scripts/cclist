@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#
+# cclist - Lista notas guardadas en .context
+# Usage: cclist [tipo]
+#   tipo: decision|step|context|all (default: all)
+#
+
+set -e
+
+# Colores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Obtener directorio de trabajo
+WORKDIR="$(pwd)"
+CONTEXT_DIR="${WORKDIR}/.context"
+
+# Verificar que existe .context
+if [ ! -d "${CONTEXT_DIR}" ]; then
+  echo -e "${RED}Error: ${CONTEXT_DIR} no existe${NC}"
+  echo "Ejecutá ccinit primero para inicializar"
+  exit 1
+fi
+
+TYPE="${1:-all}"
+
+# Función para listar archivos
+list_notes() {
+  local dir="$1"
+  local label="$2"
+  
+  if [ -d "${dir}" ]; then
+    local count=$(find "${dir}" -name "*.md" -not -name ".gitkeep" -not -name "README.md" | wc -l)
+    if [ "${count}" -gt 0 ]; then
+      echo -e "\n${BLUE}# ${label}${NC} (${count})"
+      echo "────────────────────────────────"
+      find "${dir}" -name "*.md" -not -name ".gitkeep" -not -name "README.md" | sort | while read -r file; do
+        local filename=$(basename "${file}")
+        local title=$(head -1 "${file}" | sed 's/^# //')
+        local date=$(echo "${filename}" | cut -d'-' -f1,2,3)
+        echo -e "  ${GREEN}${date}${NC} ${title}"
+      done
+    fi
+  fi
+}
+
+echo -e "${YELLOW}Notas en: ${WORKDIR}/.context/${NC}"
+echo ""
+
+case "${TYPE}" in
+  decision|d)
+    list_notes "${CONTEXT_DIR}/decisions" "Decisiones"
+    ;;
+  step|s)
+    list_notes "${CONTEXT_DIR}/steps" "Pasos"
+    ;;
+  context|c)
+    list_notes "${CONTEXT_DIR}/context" "Contexto"
+    ;;
+  all|*)
+    list_notes "${CONTEXT_DIR}/decisions" "Decisiones"
+    list_notes "${CONTEXT_DIR}/steps" "Pasos"
+    list_notes "${CONTEXT_DIR}/context" "Contexto"
+    ;;
+esac
+
+echo ""
+echo -e "Total: $(find "${CONTEXT_DIR}" -name "*.md" -not -name ".gitkeep" -not -name "README.md" | wc -l) notas"

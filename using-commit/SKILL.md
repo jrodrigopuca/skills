@@ -2,6 +2,9 @@
 name: using-commit
 description: Guía para escribir mensajes de commit siguiendo Conventional Commits. Usar cuando se vaya a realizar un commit, crear mensajes descriptivos, estandarizar el historial del proyecto, o automatizar versionado y changelogs. Incluye tipos de commit, scopes, breaking changes, formato y mejores prácticas. Activar con frases como "hacer commit", "mensaje de commit", "conventional commits", o "escribir commit semántico".
 license: MIT
+metadata:
+  author: jrodrigopuca
+  version: "1.0"
 ---
 
 # Guía de Conventional Commits

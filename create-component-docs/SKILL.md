@@ -2,6 +2,9 @@
 name: create-component-docs
 description: Generate comprehensive component documentation (architecture, API, examples, known issues). Works with React, Vue, Angular, and Web Components. | Genera documentación completa de componentes (arquitectura, API, ejemplos, issues conocidos). Compatible con React, Vue, Angular y Web Components.
 license: MIT
+metadata:
+  author: jrodrigopuca
+  version: "1.0"
 ---
 
 # Component Documentation Generator

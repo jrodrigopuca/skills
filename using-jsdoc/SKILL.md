@@ -2,6 +2,9 @@
 name: using-jsdoc
 description: Guide for documenting JavaScript and TypeScript code using JSDoc. Use when adding documentation to functions, classes, methods, variables, types, interfaces, modules, or any code element. Includes tag syntax, type expressions, patterns for parameters, returns, generics, and TypeScript-specific documentation. Trigger with phrases like "document this function", "add JSDoc", "document with JSDoc", or "add documentation comments".
 license: MIT
+metadata:
+  author: jrodrigopuca
+  version: "1.0"
 ---
 
 # JSDoc Documentation Guide

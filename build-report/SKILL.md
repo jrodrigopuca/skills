@@ -2,7 +2,9 @@
 name: build-report
 description: Generate structured, actionable build reports from Node.js build outputs (TypeScript, ESLint, Webpack, Vite). Groups errors by pattern, prioritizes issues, and suggests documented solutions. Orchestrates three specialized sub-skills for parsing, analysis, and report generation. Supports fast path for quick builds and sampled mode for large outputs. | Genera reportes estructurados y accionables de builds Node.js (TypeScript, ESLint, Webpack, Vite). Agrupa errores por patrón, prioriza issues y sugiere soluciones documentadas. Orquesta tres sub-skills especializadas para parsing, análisis y generación de reportes.
 license: MIT
-version: 2.0.0
+metadata:
+  author: jrodrigopuca
+  version: "1.0"
 ---
 
 # Build Report Generator
@@ -94,6 +96,7 @@ else:
 **Output:** Parsed Errors Artifact (JSON)
 
 **Sub-skill responsibilities:**
+
 - Detect build tools (TypeScript, ESLint, Webpack, Vite)
 - Extract structured errors with file, line, code, message
 - Categorize by error type
@@ -109,6 +112,7 @@ else:
 **Output:** Analyzed Errors Artifact (JSON)
 
 **Sub-skill responsibilities:**
+
 - Group errors by pattern/code/root cause
 - Assign priorities (critical/high/medium/low)
 - Identify cascading errors
@@ -116,6 +120,7 @@ else:
 - Generate prioritized recommendations
 
 **Path-specific behavior:**
+
 - **Fast path:** Basic grouping, skip root cause analysis
 - **Standard path:** Full analysis with all features
 - **Sampled path:** Analyze all but detail only top 10 groups
@@ -130,12 +135,14 @@ else:
 **Output:** Markdown Build Report (final deliverable)
 
 **Sub-skill responsibilities:**
+
 - Select appropriate report template (quick/standard/sampled)
 - Populate all sections with artifact data
 - Apply activation rules for optional sections
 - Format with consistent style and links
 
 **Optional sections** (see `orchestration-policy.md` for activation rules):
+
 - Configuration Suggestions
 - Code Context
 - Cascading Errors Explanation
@@ -145,6 +152,7 @@ else:
 **Present final report to user.**
 
 Offer follow-up options:
+
 - "Want detailed analysis for a specific error group?"
 - "Need help implementing the recommended fixes?"
 - "Want me to check if any of these errors are auto-fixable?"
@@ -155,12 +163,12 @@ Offer follow-up options:
 
 **Core principle:** Load only what you need for the current step.
 
-| Step      | Files Loaded                                  | Tokens |
-| --------- | --------------------------------------------- | ------ |
-| Planning  | SKILL.md + orchestration-policy.md            | ~2,000 |
-| Parse     | SKILL.md + parse-build-output.md              | ~2,500 |
-| Analyze   | SKILL.md + analyze-errors.md + error-docs-map | ~7,000 |
-| Generate  | SKILL.md + generate-report.md + template      | ~3,500 |
+| Step      | Files Loaded                                  | Tokens  |
+| --------- | --------------------------------------------- | ------- |
+| Planning  | SKILL.md + orchestration-policy.md            | ~2,000  |
+| Parse     | SKILL.md + parse-build-output.md              | ~2,500  |
+| Analyze   | SKILL.md + analyze-errors.md + error-docs-map | ~7,000  |
+| Generate  | SKILL.md + generate-report.md + template      | ~3,500  |
 | **Total** | (across 3 execution steps)                    | ~13,000 |
 
 **Compare to v1.0:** ~19,000 tokens loaded all at once.  
@@ -182,6 +190,7 @@ Offer follow-up options:
 **Output:** Quick summary report (~50-100 lines)
 
 **Optimizations:**
+
 - Basic error grouping (by code only)
 - Skip root cause analysis
 - Skip cascading error detection
@@ -195,6 +204,7 @@ Offer follow-up options:
 **Output:** Full structured report (~200-800 lines)
 
 **Features:**
+
 - Complete error grouping and root cause analysis
 - Cascading error detection
 - Detailed recommendations
@@ -208,6 +218,7 @@ Offer follow-up options:
 **Output:** Sampled report (~100-300 lines)
 
 **Optimizations:**
+
 - Group all errors but detail only top 10
 - Summary stats for remaining errors
 - Focus on patterns rather than exhaustive listing
@@ -238,14 +249,14 @@ Task(
   description: "Parse build output for [project]",
   subagent_type: "general",
   prompt: "You are a build-report sub-agent. Read the sub-skill file at build-report/sub-skills/parse-build-output.md and follow its instructions exactly.
-  
+
   CONTEXT:
   - Workflow path: [fast/standard/sampled]
   - Build output: [provided by user]
-  
+
   TASK:
   Parse the build output and produce a Parsed Errors Artifact according to contracts/artifacts.md.
-  
+
   Return the artifact as structured JSON."
 )
 ```
@@ -258,14 +269,14 @@ Task(
 
 If issues arise during execution:
 
-| Issue                             | Action                                           |
-| --------------------------------- | ------------------------------------------------ |
-| Build output > 50K tokens         | Truncate to first 1000 errors, note in report    |
-| Parsing fails for a tool          | Mark as "unparsed", show raw snippet             |
-| Error code not in docs map        | Link to tool's main documentation                |
-| 500+ errors after parsing         | Force sampled path                               |
-| Report generation > 2000 lines    | Switch to sampled mode, warn user                |
-| Unknown build tool                | Generic parse (file:line - message), note in report |
+| Issue                          | Action                                              |
+| ------------------------------ | --------------------------------------------------- |
+| Build output > 50K tokens      | Truncate to first 1000 errors, note in report       |
+| Parsing fails for a tool       | Mark as "unparsed", show raw snippet                |
+| Error code not in docs map     | Link to tool's main documentation                   |
+| 500+ errors after parsing      | Force sampled path                                  |
+| Report generation > 2000 lines | Switch to sampled mode, warn user                   |
+| Unknown build tool             | Generic parse (file:line - message), note in report |
 
 **Graceful failures:** Always produce something useful, even if not perfect.
 
@@ -278,6 +289,7 @@ If issues arise during execution:
 **User:** "Analyze this build output"
 
 **Input:**
+
 ```
 $ npm run build
 > tsc
@@ -289,12 +301,14 @@ Found 2 errors in 2 files.
 ```
 
 **Orchestrator Actions:**
+
 1. **Planning:** Detect 2 errors → fast path
 2. **Parse:** Extract 2 TypeScript errors
 3. **Analyze:** Basic grouping, map to docs
 4. **Generate:** Quick summary report
 
 **Output:** Markdown report showing:
+
 - Status: 🔴 FAILED
 - 2 critical errors grouped by type
 - Immediate actions (1. Add User import, 2. Fix type conversion)
@@ -307,12 +321,14 @@ Found 2 errors in 2 files.
 **Input:** [500+ errors from multiple tools]
 
 **Orchestrator Actions:**
+
 1. **Planning:** Detect 500+ errors → sampled path
 2. **Parse:** Extract first 200, collect stats on rest
 3. **Analyze:** Group all, detail top 10 patterns
 4. **Generate:** Sampled report with pattern focus
 
 **Output:** Markdown report showing:
+
 - Top 10 error patterns (detailed)
 - Summary of remaining 40+ patterns
 - Distribution by module
@@ -323,12 +339,14 @@ Found 2 errors in 2 files.
 ## Resources
 
 **Official Documentation** (primary source for solutions):
+
 - [TypeScript Error Reference](https://www.typescriptlang.org/docs/handbook/error-reference.html)
 - [ESLint Rules](https://eslint.org/docs/latest/rules/)
 - [Webpack Errors](https://webpack.js.org/configuration/stats/#errors-and-warnings)
 - [Vite Troubleshooting](https://vitejs.dev/guide/troubleshooting.html)
 
 **Skill Internal References:**
+
 - `orchestration-policy.md` - Workflow rules, activation criteria, degradation strategy
 - `contracts/artifacts.md` - Structured artifact schemas
 - `templates/report-template.md` - Report format and structure
@@ -337,6 +355,7 @@ Found 2 errors in 2 files.
 - `references/report-examples.md` - Training examples (not loaded during execution)
 
 **Sub-Skills:**
+
 - `sub-skills/parse-build-output.md` - Tool detection and error extraction
 - `sub-skills/analyze-errors.md` - Grouping, prioritization, root cause analysis
 - `sub-skills/generate-report.md` - Markdown report generation
@@ -365,6 +384,7 @@ See `CHANGELOG.md` for detailed version history.
 ## When to Use This Skill
 
 ✅ **Use when:**
+
 - Analyzing build failures with many errors
 - Need to triage and prioritize fixes
 - Want grouped, pattern-based insights
@@ -372,6 +392,7 @@ See `CHANGELOG.md` for detailed version history.
 - Multiple build tools in output
 
 ❌ **Don't use when:**
+
 - Single obvious error (user can see it directly)
 - Need to actually fix the errors (this skill reports, doesn't fix)
 - Output is not from Node.js build tools
@@ -381,6 +402,7 @@ See `CHANGELOG.md` for detailed version history.
 ## Invocation Triggers
 
 The skill auto-loads when:
+
 - User says "analyze this build output"
 - User says "generate build report"
 - User says "why did my build fail"

@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+#
+# ccnote - Crea una nota con template completo
+# Usage: ccnote "título" [tipo]
+#   tipo: decision|step|context (default: context)
+#
+
+set -e
+
+# Colores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Obtener directorio de trabajo
+WORKDIR="$(pwd)"
+CONTEXT_DIR="${WORKDIR}/.context"
+
+# Verificar que existe .context
+if [ ! -d "${CONTEXT_DIR}" ]; then
+  echo -e "${RED}Error: ${CONTEXT_DIR} no existe${NC}"
+  echo "Ejecutá ccinit primero para inicializar"
+  exit 1
+fi
+
+# Argumentos
+TITLE="${1:-}"
+TYPE="${2:-context}"
+
+# Normalizar tipo
+case "${TYPE}" in
+  decision|d) TYPE="decision" ;;
+  step|s) TYPE="steps" ;;
+  context|c) TYPE="context" ;;
+  *) TYPE="context" ;;
+esac
+
+if [ -z "${TITLE}" ]; then
+  echo "Usage: ccnote \"título\" [tipo]"
+  echo "  tipo: decision|step|context (default: context)"
+  exit 1
+fi
+
+# Generar nombre de archivo
+DATE=$(date +%Y-%m-%d)
+SLUG=$(echo "${TITLE}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+FILENAME="${DATE}-${SLUG}.md"
+FILEPATH="${CONTEXT_DIR}/${TYPE}s/${FILENAME}"
+
+# Template según tipo
+case "${TYPE}" in
+  decision)
+    cat > "${FILEPATH}" << EOF
+# Decisión: ${TITLE}
+
+> Fecha: $(date +%Y-%m-%d\ %H:%M:%S)
+
+## Contexto
+{¿Por qué se tomó esta decisión? ¿Qué problema resuelve?}
+
+## Opciones consideradas
+- **Opción A**: {descripción}
+  - Pros: 
+  - Contras:
+- **Opción B**: {descripción}
+  - Pros:
+  - Contras:
+
+## Decisión final
+{¿Qué se eligió y por qué?}
+
+## Consecuencias
+- **Positivas**: 
+- **Negativas/Trade-offs**: 
+
+## Estado
+- [ ] Pendiente de validar
+- [ ] Implementado
+- [ ] Revisado
+
+## Tags
+
+#context #decision #${SLUG}
+
+---
+*Creado con ccnote*
+EOF
+    ;;
+  steps)
+    cat > "${FILEPATH}" << EOF
+# Pasos: ${TITLE}
+
+> Fecha: $(date +%Y-%m-%d\ %H:%M:%S)
+
+## Objetivo
+{¿Qué se logra con este proceso?}
+
+## Pre-requisitos
+- 
+
+## Paso 1: {título}
+**Acción**: {qué hacer}
+**Resultado esperado**: 
+
+## Paso 2: {título}
+**Acción**: {qué hacer}
+**Resultado esperado**: 
+
+## Paso 3: {título}
+**Acción**: {qué hacer}
+**Resultado esperado**: 
+
+## Verificación
+{Cómo confirmar que funcionó}
+
+## Troubleshooting
+- **Problema**: 
+  - **Solución**:
+
+## Tags
+
+#context #steps #${SLUG}
+
+---
+*Creado con ccnote*
+EOF
+    ;;
+  context|*)
+    cat > "${FILEPATH}" << EOF
+# Contexto: ${TITLE}
+
+> Fecha: $(date +%Y-%m-%d\ %H:%M:%S)
+
+## Estado actual
+{¿Qué está pasando ahora?}
+
+## Información clave
+- Punto 1
+- Punto 2
+- Punto 3
+
+## Preguntas abiertas
+- [ ] { pregunta 1 }
+- [ ] { pregunta 2 }
+
+## Próximos pasos
+- [ ] { acción pendiente }
+- [ ] { acción completada }
+
+## Referencias
+- 
+
+## Tags
+
+#context #${SLUG}
+
+---
+*Creado con ccnote*
+EOF
+    ;;
+esac
+
+echo -e "${GREEN}✓${NC} Creado: ${FILEPATH}"
+echo ""
+echo "Tipo: ${TYPE}"
+echo ""
+# Abrir en editor si está disponible
+if command -v code &> /dev/null; then
+  echo -e "${YELLOW}¿Querés abrirlo?${NC} Escribí 'code ${FILEPATH}'"
+fi
