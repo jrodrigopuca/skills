@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# til - Save a "Today I Learned" note to your global knowledge base
+# Usage: til "title" "what you learned" [topic]
+#   topic: freeform, kebab-case (default: general)
+#
+# Notes live in ~/.til/{topic}/YYYY-MM-DD-slug.md (override base with $TIL_DIR)
+
+set -e
+
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+TIL_DIR="${TIL_DIR:-$HOME/.til}"
+
+TITLE="${1:-}"
+CONTENT="${2:-}"
+TOPIC="${3:-general}"
+
+if [ -z "${TITLE}" ] || [ -z "${CONTENT}" ]; then
+  echo "Usage: til \"title\" \"what you learned\" [topic]"
+  echo "  topic: freeform kebab-case (default: general)"
+  exit 1
+fi
+
+# Normalize topic to kebab-case
+TOPIC=$(echo "${TOPIC}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+[ -z "${TOPIC}" ] && TOPIC="general"
+
+mkdir -p "${TIL_DIR}/${TOPIC}"
+
+DATE=$(date +%Y-%m-%d)
+SLUG=$(echo "${TITLE}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+FILEPATH="${TIL_DIR}/${TOPIC}/${DATE}-${SLUG}.md"
+
+cat > "${FILEPATH}" << EOF
+# ${TITLE}
+
+> Learned: $(date +%Y-%m-%d\ %H:%M:%S)
+> Topic: ${TOPIC}
+
+${CONTENT}
+
+## Tags
+
+#til #${TOPIC}
+EOF
+
+echo -e "${GREEN}✓${NC} Saved: ${FILEPATH}"

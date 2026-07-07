@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#
+# tilreview - Resurface random TIL notes (lightweight spaced repetition)
+# Usage: tilreview [n]      (default: 3 notes)
+
+set -e
+
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+TIL_DIR="${TIL_DIR:-$HOME/.til}"
+N="${1:-3}"
+
+if [ ! -d "${TIL_DIR}" ]; then
+  echo -e "${RED}No TIL base yet${NC} — save your first note with: til \"title\" \"content\" [topic]"
+  exit 0
+fi
+
+FILES=$(find "${TIL_DIR}" -name "*.md" -type f)
+if [ -z "${FILES}" ]; then
+  echo -e "${RED}No notes to review yet${NC}"
+  exit 0
+fi
+
+TOTAL=$(echo "${FILES}" | wc -l | tr -d ' ')
+[ "${N}" -gt "${TOTAL}" ] && N="${TOTAL}"
+
+echo -e "${YELLOW}Reviewing ${N} of ${TOTAL} notes — do you still remember these?${NC}"
+
+# Portable shuffle (macOS has no shuf by default): random sort via awk seed
+echo "${FILES}" | awk 'BEGIN{srand()}{print rand()"\t"$0}' | sort -n | cut -f2- | head -n "${N}" | while read -r file; do
+  echo ""
+  echo -e "${BLUE}────────────────────────────────${NC}"
+  cat "${file}"
+done

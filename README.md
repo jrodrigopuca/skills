@@ -1,6 +1,6 @@
 # 🤖 Agent Skills Collection
 
-Colección de 12 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
+Colección de 15 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
 
 ## 📚 Skills Disponibles
 
@@ -52,6 +52,22 @@ El espejo de using-commit del lado del review: comentarios con label + decoraci�
 - 📄 **Idioma:** Inglés (triggers bilingües)
 
 **Activadores:** "review this PR", "code review feedback", "conventional comments", "comentarios de review"
+
+---
+
+### [using-pr](using-pr/)
+
+**Pull requests que se revisan rápido**
+
+El puente entre using-commit y using-review-comments: títulos convencionales (que con squash-merge terminan en el historial de main), descripciones generadas desde los commits del branch, disciplina de tamaño (<400 líneas o split), test plans ejecutables y workflow completo con gh CLI.
+
+- ✅ Descripción ensamblada desde `git log main..HEAD`
+- ✅ Review guide: decirle al reviewer dónde mirar primero
+- ✅ Stacked PRs para trabajo grande
+- ✅ Checklist de review-readiness
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "create a PR", "write the PR description", "crear un PR", "descripción del PR"
 
 ---
 
@@ -206,6 +222,38 @@ Guarda decisiones, pasos y contexto de sesiones largas en `.context/` del proyec
 
 ---
 
+### [til](til/)
+
+**Base de conocimiento personal — Today I Learned**
+
+Captura conceptos, gotchas e insights en el momento de aprenderlos, en `~/.til/` global (por persona, cruza proyectos — a diferencia de context-compactor que es por proyecto). Comandos `til`, `tillist`, `tilgrep` y `tilreview` para repaso espaciado liviano.
+
+- ✅ Scripts bash testeados (guardar/listar/buscar/repasar)
+- ✅ Un concepto por nota, título = el insight, con evidencia
+- ✅ `tilreview` resurface notas al azar
+- ✅ Fallback sin scripts (escribe archivos directamente)
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "TIL", "today I learned", "save this concept", "aprendí que", "anotá esto"
+
+---
+
+### [create-skill](create-skill/)
+
+**Meta-skill: crear skills siguiendo las convenciones de la suite**
+
+Codifica CONTRIBUTING.md en una skill operativa: description con triggers primero, presupuestos de tokens, progressive disclosure a references/, trabajo determinístico en scripts testeados con fixtures, y autocontención para instalación individual.
+
+- ✅ Familias de naming (create-*, using-*, *-report)
+- ✅ La regla del script: código parsea, el modelo analiza
+- ✅ Patrón de testing con fixtures (con las lecciones aprendidas)
+- ✅ Template copy-paste de SKILL.md
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "create a skill", "turn this into a skill", "crear una skill", "nueva skill"
+
+---
+
 ## 🚀 Instalación
 
 ### Opción 1: Instalar todas las skills
@@ -252,6 +300,15 @@ npx skills add https://github.com/jrodrigopuca/skills --skill using-review-comme
 
 # ADR skill
 npx skills add https://github.com/jrodrigopuca/skills --skill create-adr
+
+# TIL skill
+npx skills add https://github.com/jrodrigopuca/skills --skill til
+
+# PR skill
+npx skills add https://github.com/jrodrigopuca/skills --skill using-pr
+
+# Skill creator
+npx skills add https://github.com/jrodrigopuca/skills --skill create-skill
 ```
 
 ### Opción 3: Clonar repositorio
@@ -273,6 +330,9 @@ cp -r create-agents-docs ~/.agents/skills/
 cp -r deps-report ~/.agents/skills/
 cp -r using-review-comments ~/.agents/skills/
 cp -r create-adr ~/.agents/skills/
+cp -r til ~/.agents/skills/
+cp -r using-pr ~/.agents/skills/
+cp -r create-skill ~/.agents/skills/
 ```
 
 ## 💡 Uso
@@ -388,8 +448,9 @@ Estas skills están diseñadas siguiendo el **patrón Anthropics/progressive dis
 ENTENDER      create-agents-docs · create-software-docs · create-component-docs
 DECIDIR       create-adr
 TRABAJAR      build-report · test-report · deps-report
-REGISTRAR     using-jsdoc · using-commit · using-review-comments · create-changelog
-RECORDAR      context-compactor
+REGISTRAR     using-jsdoc · using-commit · using-pr · using-review-comments · create-changelog
+RECORDAR      context-compactor · til
+META          create-skill
 ```
 
 Los handoffs entre skills (commits → changelog, drafts → ADRs, reportes → contexto persistido) están documentados en [CONTRIBUTING.md](CONTRIBUTING.md), junto con las convenciones de diseño de la suite. La validación es automática: `node scripts/validate-skills.mjs` corre en CI en cada push.

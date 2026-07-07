@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# tilgrep - Search your TIL notes
+# Usage: tilgrep "pattern"
+
+set -e
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+TIL_DIR="${TIL_DIR:-$HOME/.til}"
+PATTERN="${1:-}"
+
+if [ -z "${PATTERN}" ]; then
+  echo "Usage: tilgrep \"pattern\""
+  exit 1
+fi
+
+if [ ! -d "${TIL_DIR}" ]; then
+  echo -e "${RED}No TIL base yet${NC} — save your first note with: til"
+  exit 0
+fi
+
+echo -e "${YELLOW}Searching: ${PATTERN}${NC}"
+echo ""
+
+if command -v rg &> /dev/null; then
+  RESULTS=$(rg -l -i "${PATTERN}" "${TIL_DIR}" --glob "*.md" 2>/dev/null || true)
+else
+  RESULTS=$(grep -rl -i "${PATTERN}" "${TIL_DIR}" --include="*.md" 2>/dev/null || true)
+fi
+
+if [ -z "${RESULTS}" ]; then
+  echo -e "${RED}No results${NC}"
+  exit 0
+fi
+
+echo "${RESULTS}" | while read -r file; do
+  title=$(head -1 "${file}" | sed 's/^# //')
+  echo -e "${BLUE}# ${title}${NC}"
+  echo -e "  ${GREEN}${file}${NC}"
+  if command -v rg &> /dev/null; then
+    rg -i -n "${PATTERN}" "${file}" | head -2 | sed 's/^/  /'
+  else
+    grep -i -n "${PATTERN}" "${file}" | head -2 | sed 's/^/  /'
+  fi
+  echo ""
+done

@@ -1,6 +1,6 @@
 # Contributing — Suite Design Conventions
 
-These conventions keep 12 skills working as **one system**. CI enforces the mechanical ones (`scripts/validate-skills.mjs`); the rest are design rules — read them before adding or changing a skill.
+These conventions keep 15 skills working as **one system**. CI enforces the mechanical ones (`scripts/validate-skills.mjs`); the rest are design rules — read them before adding or changing a skill. The operational version of this document is the `create-skill` skill.
 
 ## The Suite Map
 
@@ -8,8 +8,9 @@ These conventions keep 12 skills working as **one system**. CI enforces the mech
 ENTENDER      create-agents-docs · create-software-docs · create-component-docs
 DECIDIR       create-adr
 TRABAJAR      build-report · test-report · deps-report
-REGISTRAR     using-jsdoc · using-commit · using-review-comments · create-changelog
-RECORDAR      context-compactor
+REGISTRAR     using-jsdoc · using-commit · using-pr · using-review-comments · create-changelog
+RECORDAR      context-compactor · til
+META          create-skill
 ```
 
 Known handoffs (document them explicitly in the skills involved):
@@ -23,6 +24,9 @@ Known handoffs (document them explicitly in the skills involved):
 | `create-adr` → `create-software-docs` | Architecture docs cite ADRs instead of re-explaining |
 | `create-software-docs` → `create-agents-docs` | Reuse scope analysis; AGENTS.md links docs instead of repeating |
 | report skills → `context-compactor` | Persisted reports (`.reports/`) + `ccsave` summary |
+| `using-commit` → `using-pr` | Branch commits assemble the PR description; the PR title is a conventional subject |
+| `using-pr` → `using-review-comments` | The PR's review uses conventional comments, both sides |
+| learning moments → `til` | Personal insights go to `~/.til/` (per person), never to project files |
 
 ## Hard Rules (CI-enforced)
 
