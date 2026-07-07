@@ -1,0 +1,25 @@
+name: Validate skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate suite (frontmatter, triggers, budgets, links, scripts)
+        run: node scripts/validate-skills.mjs
+      - name: Smoke-test parser scripts
+        run: |
+          printf 'src/a.ts:1:1 - error TS2304: Cannot find name X.\nFound 1 error in 1 file.\n' \
+            | node build-report/assets/scripts/parse-build.mjs \
+            | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(j.totals.errors!==1)process.exit(1)})"
+          printf 'FAILED tests/test_a.py::test_x - AssertionError: boom\n=================== 1 failed in 0.1s ===================\n' \
+            | node test-report/assets/scripts/parse-tests.mjs \
+            | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(j.totals.failedParsed!==1)process.exit(1)})"
