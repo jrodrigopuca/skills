@@ -1,17 +1,15 @@
 ---
 name: build-report
-description: Generate structured, actionable build reports from Node.js build outputs (TypeScript, ESLint, Webpack, Vite). Groups errors by pattern, prioritizes issues, and suggests documented solutions. Orchestrates three specialized sub-skills for parsing, analysis, and report generation. Supports fast path for quick builds and sampled mode for large outputs. | Genera reportes estructurados y accionables de builds Node.js (TypeScript, ESLint, Webpack, Vite). Agrupa errores por patrón, prioriza issues y sugiere soluciones documentadas. Orquesta tres sub-skills especializadas para parsing, análisis y generación de reportes.
+description: Generate structured, actionable build reports from Node.js build outputs (TypeScript, ESLint, Webpack, Vite). Groups errors by pattern, prioritizes issues, and suggests documented solutions. Orchestrates three specialized sub-skills for parsing, analysis, and report generation. Supports fast path for quick builds and sampled mode for large outputs. Trigger: "analyze build output", "build report", "why did my build fail", "analizar errores de compilación", or when the user pastes multi-line build errors. | Genera reportes estructurados y accionables de builds Node.js (TypeScript, ESLint, Webpack, Vite). Agrupa errores por patrón, prioriza issues y sugiere soluciones documentadas. Orquesta tres sub-skills especializadas para parsing, análisis y generación de reportes.
 license: MIT
 metadata:
   author: jrodrigopuca
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Build Report Generator
 
 Generate structured, actionable reports from build outputs for Node.js projects.
-
-**Version 2.0** - Refactored with sub-skill architecture for optimized context usage.
 
 ---
 
@@ -25,12 +23,12 @@ Build Report transforms raw build outputs into organized, prioritized reports us
 
 ### Key Features
 
-- ✅ **Multiple build tools:** TypeScript, ESLint, Webpack, Vite
-- ✅ **Intelligent grouping:** By pattern, root cause, and module
-- ✅ **Priority-driven:** Focus on what blocks the build first
-- ✅ **Documentation links:** Points to official docs, doesn't duplicate them
-- ✅ **Three workflow paths:** Fast (< 10 errors), Standard (10-100), Sampled (100+)
-- ✅ **Context-optimized:** Lazy loading per step (~7.5K tokens vs 19K)
+- **Multiple build tools:** TypeScript, ESLint, Webpack, Vite
+- **Intelligent grouping:** By pattern, root cause, and module
+- **Priority-driven:** Focus on what blocks the build first
+- **Documentation links:** Points to official docs, doesn't duplicate them
+- **Three workflow paths:** Fast (< 10 errors), Standard (10-100), Sampled (100+)
+- **Context-optimized:** Lazy loading per step
 
 ---
 
@@ -163,16 +161,12 @@ Offer follow-up options:
 
 **Core principle:** Load only what you need for the current step.
 
-| Step      | Files Loaded                                  | Tokens  |
-| --------- | --------------------------------------------- | ------- |
-| Planning  | SKILL.md + orchestration-policy.md            | ~2,000  |
-| Parse     | SKILL.md + parse-build-output.md              | ~2,500  |
-| Analyze   | SKILL.md + analyze-errors.md + error-docs-map | ~7,000  |
-| Generate  | SKILL.md + generate-report.md + template      | ~3,500  |
-| **Total** | (across 3 execution steps)                    | ~13,000 |
-
-**Compare to v1.0:** ~19,000 tokens loaded all at once.  
-**Savings:** ~31% reduction in context usage.
+| Step     | Files Loaded                                  |
+| -------- | --------------------------------------------- |
+| Planning | SKILL.md + orchestration-policy.md            |
+| Parse    | SKILL.md + parse-build-output.md              |
+| Analyze  | SKILL.md + analyze-errors.md + error-docs-map |
+| Generate | SKILL.md + generate-report.md + template      |
 
 ### Files NOT Loaded During Execution
 
@@ -184,47 +178,11 @@ Offer follow-up options:
 
 ## Workflow Paths
 
-### Fast Path (< 10 errors)
-
-**Time:** 1-2 minutes  
-**Output:** Quick summary report (~50-100 lines)
-
-**Optimizations:**
-
-- Basic error grouping (by code only)
-- Skip root cause analysis
-- Skip cascading error detection
-- Generate summary + immediate actions only
-
-**Use when:** User needs rapid feedback on small builds
-
-### Standard Path (10-100 errors)
-
-**Time:** 3-5 minutes  
-**Output:** Full structured report (~200-800 lines)
-
-**Features:**
-
-- Complete error grouping and root cause analysis
-- Cascading error detection
-- Detailed recommendations
-- Optional sections (config suggestions, code context)
-
-**Use when:** Typical build failures need comprehensive analysis
-
-### Sampled Path (100+ errors)
-
-**Time:** 2-4 minutes (faster than standard despite more errors)  
-**Output:** Sampled report (~100-300 lines)
-
-**Optimizations:**
-
-- Group all errors but detail only top 10
-- Summary stats for remaining errors
-- Focus on patterns rather than exhaustive listing
-- Top 3 recommended fixes
-
-**Use when:** Large builds with many errors need manageable insights
+| Path         | Errors | Report size    | Behavior                                                                                          |
+| ------------ | ------ | -------------- | ------------------------------------------------------------------------------------------------- |
+| **Fast**     | < 10   | ~50-100 lines  | Group by code only, skip root cause and cascading analysis, summary + immediate actions            |
+| **Standard** | 10-100 | ~200-800 lines | Full grouping, root cause analysis, cascading detection, detailed recommendations, optional sections |
+| **Sampled**  | 100+   | ~100-300 lines | Group all but detail only top 10 patterns, summary stats for the rest, top 3 recommended fixes      |
 
 ---
 
@@ -247,7 +205,7 @@ Each sub-skill validates its input and output against these contracts.
 ```
 Task(
   description: "Parse build output for [project]",
-  subagent_type: "general",
+  subagent_type: "general-purpose",
   prompt: "You are a build-report sub-agent. Read the sub-skill file at build-report/sub-skills/parse-build-output.md and follow its instructions exactly.
 
   CONTEXT:
@@ -316,23 +274,9 @@ Found 2 errors in 2 files.
 
 ### Example 2: Large Build (Sampled Path)
 
-**User:** "Generate build report from this CI log"
+**User:** "Generate build report from this CI log" with 500+ errors from multiple tools.
 
-**Input:** [500+ errors from multiple tools]
-
-**Orchestrator Actions:**
-
-1. **Planning:** Detect 500+ errors → sampled path
-2. **Parse:** Extract first 200, collect stats on rest
-3. **Analyze:** Group all, detail top 10 patterns
-4. **Generate:** Sampled report with pattern focus
-
-**Output:** Markdown report showing:
-
-- Top 10 error patterns (detailed)
-- Summary of remaining 40+ patterns
-- Distribution by module
-- Top 3 recommended fixes
+**Orchestrator:** detects 500+ errors → sampled path → parse first 200 with stats on the rest → group all, detail top 10 patterns → sampled report with top 10 patterns detailed, summary stats for the rest, distribution by module, and top 3 recommended fixes.
 
 ---
 
@@ -362,25 +306,6 @@ Found 2 errors in 2 files.
 
 ---
 
-## Version History
-
-See `CHANGELOG.md` for detailed version history.
-
-- **v2.0.0** (2024-03-09): Sub-skill architecture with context optimization
-- **v1.0.0** (2024-02-10): Initial monolithic implementation
-
----
-
-## Philosophy
-
-1. **Link to docs, don't duplicate:** We point to official documentation rather than explaining solutions inline.
-2. **Context-aware loading:** Load only what's needed for each step to minimize token usage.
-3. **Priority-driven:** Focus on what blocks the build first.
-4. **Actionable always:** Every report includes clear next steps.
-5. **Graceful degradation:** Always produce something useful, even with incomplete data.
-
----
-
 ## When to Use This Skill
 
 ✅ **Use when:**
@@ -399,29 +324,9 @@ See `CHANGELOG.md` for detailed version history.
 
 ---
 
-## Invocation Triggers
-
-The skill auto-loads when:
-
-- User says "analyze this build output"
-- User says "generate build report"
-- User says "why did my build fail"
-- User provides large multi-line output that looks like build errors
-
----
-
 ## Output
 
-The final deliverable is a **Markdown Build Report** containing:
-
-- ✅ Executive summary with impact and top issues
-- ✅ Grouped errors with patterns and root causes
-- ✅ Priority-sorted recommendations
-- ✅ Documentation links for each error type
-- ✅ Useful commands for next steps
-- ⚠️ Optional: Configuration suggestions (when applicable)
-- ⚠️ Optional: Code context (when helpful)
-- ⚠️ Optional: Cascading error explanations (when detected)
+The final deliverable is a **Markdown Build Report** containing: executive summary, grouped errors with patterns and root causes, priority-sorted recommendations, documentation links, and useful commands for next steps. Optional sections (config suggestions, code context, cascading error explanations) follow the activation rules in `orchestration-policy.md`.
 
 ---
 

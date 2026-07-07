@@ -1,6 +1,6 @@
 ---
 name: create-software-docs
-description: Orchestrate project documentation generation from codebase analysis using specialized sub-skills for scope analysis, architecture, development guides, ADRs, runbooks, APIs, data models, glossary, known issues, validation, and cleanup. | Orquesta la generación de documentación de proyecto desde el análisis del código usando sub-skills especializadas para alcance, arquitectura, guía de desarrollo, ADRs, runbooks, API, modelo de datos, glosario, problemas conocidos, validación y limpieza.
+description: Orchestrate project documentation generation from codebase analysis using specialized sub-skills for scope analysis, architecture, development guides, ADRs, runbooks, APIs, data models, glossary, known issues, validation, and cleanup. Trigger: "document this project", "generate project docs", "update the docs", "documentar el proyecto", "generar documentación". | Orquesta la generación de documentación de proyecto desde el análisis del código usando sub-skills especializadas para alcance, arquitectura, guía de desarrollo, ADRs, runbooks, API, modelo de datos, glosario, problemas conocidos, validación y limpieza.
 license: MIT
 metadata:
   author: jrodrigopuca

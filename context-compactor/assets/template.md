@@ -1,27 +1,27 @@
-# {TÍTULO}
+# {TITLE}
 
-> Compactado el: {DATE}
-> Tipo: {decisión|pasos|contexto}
-> Estado: {borrador|completo|referenciado}
-
----
-
-## Resumen (para contexto rápido)
-
-{2-3 líneas que capturan lo esencial}
+> Compacted at: {DATE}
+> Type: {decision|steps|context}
+> Status: {draft|complete|referenced}
 
 ---
 
-## Contenido Detallado
+## Summary (for quick context)
 
-{Sección principal}
+{2-3 lines capturing the essentials}
 
 ---
 
-## Preguntas Abiertas
+## Detailed Content
 
-- [ ] { pregunta 1 }
-- [ ] { pregunta 2 }
+{Main section}
+
+---
+
+## Open Questions
+
+- [ ] {question 1}
+- [ ] {question 2}
 
 ---
 
@@ -31,8 +31,8 @@
 
 ---
 
-## Histórico
+## History
 
-| Fecha | Cambio | Quién |
-|-------|--------|-------|
-| {DATE} | Creado | {usuario} |
+| Date | Change | Who |
+|------|--------|-----|
+| {DATE} | Created | {user} |

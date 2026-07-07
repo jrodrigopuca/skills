@@ -1,36 +1,40 @@
 ---
 name: context-compactor
 description: >
-  Sistema de compactación de contexto para evitar saturación de la ventana de contexto.
-  Guarda decisiones, pasos, y contexto en archivos markdown organizados.
-  Trigger: Cuando el usuario menciona "guardar contexto", "compactar", "offload", o cuando la conversación se vuelve muy larga.
+  Context compaction system to avoid saturating the context window.
+  Saves decisions, steps, and context into organized markdown files under .context/.
+  Trigger: when the user says "save context", "compact", "offload", "guardar contexto",
+  "compactar", or when the conversation gets very long.
 license: MIT
 metadata:
   author: jrodrigopuca
-  version: "1.0"
+  version: "2.0"
 ---
 
-## Cuándo Usar
+## When to Use
 
-- Cuando la ventana de contexto está cerca de agotarse
-- Cuando hay decisiones importantes que documentar
-- Cuando un proceso tiene muchos pasos que no caben en contexto
-- Cuando el usuario dice "guarda esto", "compacta", "offload"
-- Para guardar estado antes de cambios grandes
-- Al final de sesiones largas para resumir
+- When the context window is close to running out
+- When there are important decisions worth documenting
+- When a process has more steps than fit in context
+- When the user says "save this", "compact", "offload"
+- To save state before large changes
+- At the end of long sessions, to summarize
 
-## Instalación (una vez)
+## Installation (once)
 
 ```bash
-# 1. Copiar scripts a ~/.local/bin/
+# 1. Copy scripts to ~/.local/bin/
+# {SKILL_DIR} = directory where this skill is installed, for example:
+#   Claude Code: ~/.claude/skills/context-compactor
+#   opencode:    ~/.config/opencode/skill/context-compactor
 mkdir -p ~/.local/bin
-cp -r ~/.config/opencode/skill/context-compactor/assets/scripts/* ~/.local/bin/
+cp -r {SKILL_DIR}/assets/scripts/* ~/.local/bin/
 chmod +x ~/.local/bin/cc*
 
-# 2. Agregar alias al ~/.zshrc
+# 2. Add aliases to ~/.zshrc
 cat >> ~/.zshrc << 'EOF'
 
-# Context Compactor - Comandos de compactación de contexto
+# Context Compactor - context compaction commands
 alias ccinit="~/.local/bin/ccinit"
 alias ccsave="~/.local/bin/ccsave"
 alias ccnote="~/.local/bin/ccnote"
@@ -38,93 +42,95 @@ alias cclist="~/.local/bin/cclist"
 alias ccgrep="~/.local/bin/ccgrep"
 EOF
 
-# 3. Recargar shell
+# 3. Reload shell
 source ~/.zshrc
 ```
 
-## Comandos
+**Fallback without scripts**: if the `cc*` commands are not installed, do not block the user. Create the files directly under `.context/{decisions,steps,context}/` with the write tool, using the templates below and the filename format `YYYY-MM-DD-kebab-title.md`.
 
-| Comando  | Descripción                        | Ejemplo                                |
-| -------- | ---------------------------------- | -------------------------------------- |
-| `ccinit` | Inicializa .context en el proyecto | `ccinit`                               |
-| `ccsave` | Guarda contexto rápido             | `ccsave "título" "contenido" decision` |
-| `ccnote` | Crea nota con template completo    | `ccnote "título del proceso" steps`    |
-| `cclist` | Lista todas las notas              | `cclist` o `cclist decision`           |
-| `ccgrep` | Busca en todas las notas           | `ccgrep "jwt"`                         |
+## Commands
 
-### Uso detallado
+| Command  | Description                          | Example                              |
+| -------- | ------------------------------------ | ------------------------------------ |
+| `ccinit` | Initialize .context in the project   | `ccinit`                             |
+| `ccsave` | Quick context save                   | `ccsave "title" "content" decision`  |
+| `ccnote` | Create note from full template       | `ccnote "process title" steps`       |
+| `cclist` | List all notes                       | `cclist` or `cclist decision`        |
+| `ccgrep` | Search across all notes              | `ccgrep "jwt"`                       |
+
+### Detailed usage
 
 ```bash
-# Inicializar en un proyecto (hacer una sola vez)
+# Initialize in a project (once)
 ccinit
 
-# Guardado rápido
-ccsave "Auth con JWT" "Elegimos JWT con refresh tokens por simplicidad" decision
+# Quick save
+ccsave "JWT auth" "We chose JWT with refresh tokens for simplicity" decision
 
-# Crear nota con template
-ccnote "Setup de desarrollo local" steps
-ccnote "Arquitectura de pagos" decision
+# Create note from template
+ccnote "Local development setup" steps
+ccnote "Payments architecture" decision
 
-# Ver qué tenés guardado
-cclist              # Todas
-cclist decision     # Solo decisiones
-cclist steps        # Solo pasos
+# See what is saved
+cclist              # everything
+cclist decision     # decisions only
+cclist steps        # steps only
 
-# Buscar
+# Search
 ccgrep "auth"
-ccgrep "2024"
+ccgrep "2026"
 ```
 
-## Estructura de Archivos
+## File Structure
 
 ```
 {workdir}/
 └── .context/
     ├── README.md
     ├── decisions/
-    │   ├── 2024-01-15-auth-architecture.md
-    │   └── 2024-02-20-database-choice.md
+    │   ├── 2026-01-15-auth-architecture.md
+    │   └── 2026-02-20-database-choice.md
     ├── steps/
-    │   └── 2024-01-10-setup-local.md
+    │   └── 2026-01-10-local-setup.md
     └── context/
-        └── 2024-01-05-proyecto-inicio.md
+        └── 2026-01-05-project-kickoff.md
 ```
 
-## Tipos de Notas
+## Note Types
 
-### 1. Decision (decisiones/)
+### 1. Decision (decisions/)
 
-Para decisiones importantes con contexto y consecuencias.
+For important decisions with context and consequences.
 
-**Template automático**:
+**Automatic template**:
 
 ```markdown
-# Decisión: {título}
+# Decision: {title}
 
-> Fecha: {timestamp}
+> Date: {timestamp}
 
-## Contexto
+## Context
 
-{¿Por qué se tomó esta decisión?}
+{Why was this decision made?}
 
-## Opciones consideradas
+## Options considered
 
-- **Opción A**: ...
-- **Opción B**: ...
+- **Option A**: ...
+- **Option B**: ...
 
-## Decisión final
+## Final decision
 
-{Qué se eligió y por qué}
+{What was chosen and why}
 
-## Consecuencias
+## Consequences
 
-- Positivas: ...
-- Negativas: ...
+- Positive: ...
+- Negative: ...
 
-## Estado
+## Status
 
-- [ ] Pendiente
-- [ ] Implementado
+- [ ] Pending
+- [ ] Implemented
 
 ## Tags
 
@@ -133,104 +139,104 @@ Para decisiones importantes con contexto y consecuencias.
 
 ### 2. Steps (steps/)
 
-Para procesos y procedimientos.
+For processes and procedures.
 
-**Template automático**:
+**Automatic template**:
 
 ```markdown
-# Pasos: {título}
+# Steps: {title}
 
-> Fecha: {timestamp}
+> Date: {timestamp}
 
-## Objetivo
+## Goal
 
-{Qué se logra}
+{What this achieves}
 
-## Paso 1: {título}
+## Step 1: {title}
 
-**Acción**: ...
-**Resultado**: ...
+**Action**: ...
+**Result**: ...
 
-## Verificación
+## Verification
 
-{Cómo confirmar}
+{How to confirm}
 
 ## Troubleshooting
 
-- Problema: ...
-  - Solución: ...
+- Problem: ...
+  - Solution: ...
 ```
 
 ### 3. Context (context/)
 
-Para estado general e información.
+For general state and information.
 
-**Template automático**:
+**Automatic template**:
 
 ```markdown
-# Contexto: {título}
+# Context: {title}
 
-> Fecha: {timestamp}
+> Date: {timestamp}
 
-## Estado actual
+## Current state
 
-{Qué está pasando}
+{What is happening}
 
-## Información clave
+## Key information
 
 - ...
 
-## Preguntas abiertas
+## Open questions
 
 - [ ] ...
 
-## Próximos pasos
+## Next steps
 
 - [ ] ...
 ```
 
-## Reglas de Oro
+## Golden Rules
 
-1. **Siempre pregunta antes de compactar** - No guardes nada sin approval del usuario
-2. **Sé específico con títulos** - "auth-flow-jwt" > "nota1"
-3. **Guarda el "por qué"** - El contexto futuro necesitará entender las decisiones
-4. **Usa templates** - Consistencia facilita búsqueda después
-5. **Referencia desde contexto** - Cuando guardes algo, decí "Lo guardé en .context/decisions/auth-flow.md"
-6. **El usuario es el owner** - Son sus notas, puede editar, borrar, lo que quiera
+1. **Always ask before compacting** - never save anything without the user's approval
+2. **Be specific with titles** - "auth-flow-jwt" > "note1"
+3. **Save the "why"** - future context will need to understand the decisions
+4. **Use the templates** - consistency makes searching easier later
+5. **Reference from chat** - when you save something, say "Saved it to .context/decisions/auth-flow.md"
+6. **The user is the owner** - these are their notes; they can edit or delete anything
 
-## Workflow de Compactación
-
-```
-1. Identificar qué compactar
-2. Elegir tipo (decision/step/context)
-3. Crear archivo (ccnote o ccsave)
-4. Resumir en 2-3 líneas lo esencial
-5. Referenciar el archivo en chat
-6. MOSTRAR al usuario dónde quedó
-```
-
-## Ejemplo de Uso
-
-**Usuario**: "Guarda lo que hicimos sobre la arquitectura de auth"
-
-**Tú**: "Lo guardo. ¿Querés que sea una decisión, pasos, o contexto general?"
-
-**Usuario**: "Decisión"
-
-**Tú**: (ejecuta) → Listo, lo guardé en `.context/decisions/2024-01-auth-architecture.md`.
+## Compaction Workflow
 
 ```
-Decisión: Arquitectura de Auth
-├── Elegimos JWT con refresh tokens
-├── Porque es simple y escalable
+1. Identify what to compact
+2. Choose the type (decision/step/context)
+3. Create the file (ccnote or ccsave, or write it directly as fallback)
+4. Summarize the essentials in 2-3 lines
+5. Reference the file in chat
+6. SHOW the user where it landed
+```
+
+## Usage Example
+
+**User**: "Save what we did about the auth architecture"
+
+**You**: "Saving it. Should it be a decision, steps, or general context?"
+
+**User**: "Decision"
+
+**You**: (runs it) → Done, saved to `.context/decisions/2026-01-auth-architecture.md`.
+
+```
+Decision: Auth Architecture
+├── We chose JWT with refresh tokens
+├── Because it is simple and scalable
 └── Tags: #context #decision #auth
 ```
 
-**Usuario**: "Perfecto, después lo veo"
+**User**: "Perfect, I'll check it later"
 
-**Tú**: "Dale, cuando quieras ver todo lo guardado usá `cclist`, o buscá algo específico con `ccgrep 'auth'`"
+**You**: "Whenever you want to see everything saved use `cclist`, or search for something specific with `ccgrep 'auth'`"
 
 ## Assets
 
-- **Scripts**: Ver [scripts/](assets/scripts/) para los scripts bash
-- **Template**: Ver [assets/template.md](assets/template.md) para template general
+- **Scripts**: See [scripts/](assets/scripts/) for the bash scripts
+- **Template**: See [assets/template.md](assets/template.md) for the general template

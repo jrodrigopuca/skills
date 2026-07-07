@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# ccinit - Inicializa el directorio .context en el proyecto actual
+# ccinit - Initialize the .context directory in the current project
 # Usage: ccinit
 #
 
@@ -8,72 +8,72 @@ set -e
 
 CONTEXT_DIR=".context"
 
-# Colores
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-# Obtener directorio de trabajo (donde estamos parado)
+# Working directory (where we are standing)
 WORKDIR="${1:-$(pwd)}"
 
-echo -e "${YELLOW}Inicializando contexto en: ${WORKDIR}${NC}"
+echo -e "${YELLOW}Initializing context in: ${WORKDIR}${NC}"
 
-# Crear estructura de directorios
+# Create directory structure
 mkdir -p "${WORKDIR}/${CONTEXT_DIR}/decisions"
 mkdir -p "${WORKDIR}/${CONTEXT_DIR}/steps"
 mkdir -p "${WORKDIR}/${CONTEXT_DIR}/context"
 
-# Crear .gitkeep para que se mantenga en git
+# Create .gitkeep files so git keeps the directories
 touch "${WORKDIR}/${CONTEXT_DIR}/.gitkeep"
 touch "${WORKDIR}/${CONTEXT_DIR}/decisions/.gitkeep"
 touch "${WORKDIR}/${CONTEXT_DIR}/steps/.gitkeep"
 touch "${WORKDIR}/${CONTEXT_DIR}/context/.gitkeep"
 
-# Crear README si no existe
+# Create README if it does not exist
 if [ ! -f "${WORKDIR}/${CONTEXT_DIR}/README.md" ]; then
   cat > "${WORKDIR}/${CONTEXT_DIR}/README.md" << 'EOF'
-# Contexto Compactado
+# Compacted Context
 
-Directorio para guardar decisiones, pasos y contexto importante del proyecto.
+Directory for saving important project decisions, steps, and context.
 
-## Estructura
+## Structure
 
 ```
 .context/
-├── decisions/   # Decisiones importantes con su contexto
-├── steps/       # Procesos y procedimientos
-└── context/     # Estado general y información
+├── decisions/   # Important decisions with their context
+├── steps/       # Processes and procedures
+└── context/     # General state and information
 ```
 
-## Comandos
+## Commands
 
 ```bash
-ccsave "título" "contenido"     # Guardar rápido
-ccnote "título"                 # Crear nota con template
-cclist                          # Listar notas
-ccgrep "patrón"                 # Buscar en notas
+ccsave "title" "content"     # Quick save
+ccnote "title"               # Create note from template
+cclist                       # List notes
+ccgrep "pattern"             # Search notes
 ```
 
 ## Tips
 
-- Sé específico con los títulos
-- Incluye el "por qué" en las decisiones
-- Actualiza cuando el contexto cambie
+- Be specific with titles
+- Include the "why" in decisions
+- Update notes when the context changes
 EOF
 fi
 
-echo -e "${GREEN}✓${NC} Directorio ${CONTEXT_DIR} creado en ${WORKDIR}"
+echo -e "${GREEN}✓${NC} ${CONTEXT_DIR} directory created in ${WORKDIR}"
 echo ""
-echo "Estructura:"
+echo "Structure:"
 echo "  .context/"
 echo "  ├── decisions/"
 echo "  ├── steps/"
 echo "  └── context/"
 echo ""
-echo "Para usar desde cualquier lugar, agregá alias a tu ~/.zshrc:"
-echo '  alias ccinit="~/scripts/context-compactor/ccinit"'
-echo '  alias ccsave="~/scripts/context-compactor/ccsave"'
-echo '  alias ccnote="~/scripts/context-compactor/ccnote"'
-echo '  alias cclist="~/scripts/context-compactor/cclist"'
-echo '  alias ccgrep="~/scripts/context-compactor/ccgrep"'
+echo "To use from anywhere, add aliases to your ~/.zshrc:"
+echo '  alias ccinit="~/.local/bin/ccinit"'
+echo '  alias ccsave="~/.local/bin/ccsave"'
+echo '  alias ccnote="~/.local/bin/ccnote"'
+echo '  alias cclist="~/.local/bin/cclist"'
+echo '  alias ccgrep="~/.local/bin/ccgrep"'

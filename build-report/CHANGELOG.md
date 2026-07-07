@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.0.0] - 2024-03-09
+## [2.0.0] - 2026-03-09
 
 ### 🎯 Major Refactor: Sub-Skill Architecture
 
@@ -88,7 +88,7 @@ If you have scripts/tools invoking v1.0:
 
 ---
 
-## [1.0.0] - 2024-02-10
+## [1.0.0] - 2026-02-10
 
 ### Initial Release
 
@@ -140,4 +140,4 @@ Report issues or suggest features:
 
 ---
 
-**Last updated:** 2024-03-09
+**Last updated:** 2026-03-09

@@ -1,37 +1,37 @@
 #!/usr/bin/env bash
 #
-# cclist - Lista notas guardadas en .context
-# Usage: cclist [tipo]
-#   tipo: decision|step|context|all (default: all)
+# cclist - List notes saved in .context
+# Usage: cclist [type]
+#   type: decision|step|context|all (default: all)
 #
 
 set -e
 
-# Colores
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Obtener directorio de trabajo
+# Working directory
 WORKDIR="$(pwd)"
 CONTEXT_DIR="${WORKDIR}/.context"
 
-# Verificar que existe .context
+# Verify .context exists
 if [ ! -d "${CONTEXT_DIR}" ]; then
-  echo -e "${RED}Error: ${CONTEXT_DIR} no existe${NC}"
-  echo "Ejecutá ccinit primero para inicializar"
+  echo -e "${RED}Error: ${CONTEXT_DIR} does not exist${NC}"
+  echo "Run ccinit first to initialize"
   exit 1
 fi
 
 TYPE="${1:-all}"
 
-# Función para listar archivos
+# List note files in a directory
 list_notes() {
   local dir="$1"
   local label="$2"
-  
+
   if [ -d "${dir}" ]; then
     local count=$(find "${dir}" -name "*.md" -not -name ".gitkeep" -not -name "README.md" | wc -l)
     if [ "${count}" -gt 0 ]; then
@@ -47,25 +47,25 @@ list_notes() {
   fi
 }
 
-echo -e "${YELLOW}Notas en: ${WORKDIR}/.context/${NC}"
+echo -e "${YELLOW}Notes in: ${WORKDIR}/.context/${NC}"
 echo ""
 
 case "${TYPE}" in
   decision|d)
-    list_notes "${CONTEXT_DIR}/decisions" "Decisiones"
+    list_notes "${CONTEXT_DIR}/decisions" "Decisions"
     ;;
   step|s)
-    list_notes "${CONTEXT_DIR}/steps" "Pasos"
+    list_notes "${CONTEXT_DIR}/steps" "Steps"
     ;;
   context|c)
-    list_notes "${CONTEXT_DIR}/context" "Contexto"
+    list_notes "${CONTEXT_DIR}/context" "Context"
     ;;
   all|*)
-    list_notes "${CONTEXT_DIR}/decisions" "Decisiones"
-    list_notes "${CONTEXT_DIR}/steps" "Pasos"
-    list_notes "${CONTEXT_DIR}/context" "Contexto"
+    list_notes "${CONTEXT_DIR}/decisions" "Decisions"
+    list_notes "${CONTEXT_DIR}/steps" "Steps"
+    list_notes "${CONTEXT_DIR}/context" "Context"
     ;;
 esac
 
 echo ""
-echo -e "Total: $(find "${CONTEXT_DIR}" -name "*.md" -not -name ".gitkeep" -not -name "README.md" | wc -l) notas"
+echo -e "Total: $(find "${CONTEXT_DIR}" -name "*.md" -not -name ".gitkeep" -not -name "README.md" | wc -l) notes"

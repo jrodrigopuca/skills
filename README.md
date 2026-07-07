@@ -1,6 +1,6 @@
 # 🤖 Agent Skills Collection
 
-Colección de 4 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
+Colección de 6 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
 
 ## 📚 Skills Disponibles
 
@@ -32,8 +32,8 @@ Escribe commits siguiendo Conventional Commits con tipos estándar, scopes, brea
 - ✅ Referencias a tickets JIRA
 - ✅ 15+ mejores prácticas detalladas
 - ✅ Configuración de validación automática
-- 📄 **Idioma:** Español
-- 📊 **Tamaño:** ~2,200 líneas
+- 📄 **Idioma:** Inglés (triggers bilingües)
+- 📊 **Tamaño:** ~1,100 líneas
 
 **Activadores:** "hacer commit", "mensaje de commit", "conventional commits"
 
@@ -77,6 +77,37 @@ Crea documentación completa de componentes incluyendo arquitectura, API/props, 
 
 ---
 
+### [create-software-docs](create-software-docs/)
+
+**Orquestador de documentación de proyecto**
+
+Genera o actualiza la documentación completa de un proyecto (`docs/`) coordinando 12 sub-skills especializadas: overview, arquitectura, guía de desarrollo, ADRs, runbooks, modelo de datos, API, glosario, known issues, validación y limpieza. Soporta modos `generate`, `update` y `reconcile`.
+
+- ✅ 12 sub-skills especializadas con contratos de handoff
+- ✅ Basado en evidencia del repositorio (no inventa)
+- ✅ Soporta monorepos con scope por app/package/servicio
+- ✅ Validación con niveles minimal/standard/full
+- 📄 **Idioma:** Bilingüe (English | Español)
+
+**Activadores:** "document this project", "generate project docs", "documentar el proyecto"
+
+---
+
+### [context-compactor](context-compactor/)
+
+**Compactación de contexto en archivos markdown**
+
+Guarda decisiones, pasos y contexto de sesiones largas en `.context/` del proyecto, con scripts CLI (`ccinit`, `ccsave`, `ccnote`, `cclist`, `ccgrep`) y templates para decisiones, procedimientos y estado.
+
+- ✅ Scripts bash instalables en `~/.local/bin`
+- ✅ Templates para decision/steps/context
+- ✅ Fallback sin scripts (crea archivos directamente)
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "guardar contexto", "compactar", "offload"
+
+---
+
 ## 🚀 Instalación
 
 ### Opción 1: Instalar todas las skills
@@ -99,6 +130,12 @@ npx skills add https://github.com/jrodrigopuca/skills --skill build-report
 
 # Component Docs skill
 npx skills add https://github.com/jrodrigopuca/skills --skill create-component-docs
+
+# Software Docs skill
+npx skills add https://github.com/jrodrigopuca/skills --skill create-software-docs
+
+# Context Compactor skill
+npx skills add https://github.com/jrodrigopuca/skills --skill context-compactor
 ```
 
 ### Opción 3: Clonar repositorio
@@ -112,6 +149,8 @@ cp -r using-jsdoc ~/.agents/skills/
 cp -r using-commit ~/.agents/skills/
 cp -r build-report ~/.agents/skills/
 cp -r create-component-docs ~/.agents/skills/
+cp -r create-software-docs ~/.agents/skills/
+cp -r context-compactor ~/.agents/skills/
 ```
 
 ## 💡 Uso
@@ -249,7 +288,7 @@ Estas skills llenan vacíos en el ecosistema:
 | Skill            | Estado en Ecosistema | Nuestro Enfoque                                          |
 | ---------------- | -------------------- | -------------------------------------------------------- |
 | **using-jsdoc**  | ❌ No existe         | Referencia completa de JSDoc con 50+ tags                |
-| **using-commit** | ❌ No existe         | Conventional Commits con JIRA + español                  |
+| **using-commit** | ❌ No existe         | Conventional Commits con JIRA + triggers bilingües       |
 | **build-report** | ❌ No existe         | Triage y análisis de builds - complementa docs oficiales |
 
 **Filosofía de build-report:**  
