@@ -1,6 +1,6 @@
 # 🤖 Agent Skills Collection
 
-Colección de 6 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
+Colección de 9 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
 
 ## 📚 Skills Disponibles
 
@@ -59,6 +59,22 @@ Analiza outputs de compilación (TypeScript, ESLint, Webpack, Vite) y genera rep
 
 ---
 
+### [test-report](test-report/)
+
+**Triage de tests fallidos con detección de causas raíz**
+
+Analiza output de test runners (Jest, Vitest, Playwright, pytest) y genera un reporte priorizado: agrupa fallos por causa raíz, detecta cascadas de fixtures rotas, separa regresiones reales de snapshots viejos y detecta tests flaky. Hermana de build-report.
+
+- ✅ Soporte para Jest, Vitest, Playwright, pytest y JUnit XML
+- ✅ Clasificación: cascada / regresión / snapshot / flaky / infra
+- ✅ Detección de flaky tests con heurísticas y estrategias de fix
+- ✅ "23 fallos → 3 causas → plan ordenado"
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "analyze test results", "test report", "failing tests", "flaky tests", "analizar tests", "tests fallidos"
+
+---
+
 ### [create-component-docs](create-component-docs/)
 
 **Generador de documentación de componentes UI**
@@ -90,6 +106,40 @@ Genera o actualiza la documentación completa de un proyecto (`docs/`) coordinan
 - 📄 **Idioma:** Bilingüe (English | Español)
 
 **Activadores:** "document this project", "generate project docs", "documentar el proyecto"
+
+---
+
+### [create-changelog](create-changelog/)
+
+**Generador de CHANGELOG.md y release notes desde conventional commits**
+
+El payoff de using-commit: extrae el historial de commits, lo clasifica en secciones Keep a Changelog, infiere el bump de versión (major/minor/patch), reescribe los subjects en lenguaje de usuario y filtra el ruido interno.
+
+- ✅ Formato Keep a Changelog con links de comparación
+- ✅ Inferencia de semver bump con regla 0.x
+- ✅ Edición para humanos (síntomas, no implementación)
+- ✅ Release notes como artefacto separado
+- ✅ Soporte monorepo (changelog por paquete)
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "generate changelog", "release notes", "prepare the release", "generar changelog", "notas de versión"
+
+---
+
+### [create-agents-docs](create-agents-docs/)
+
+**Generador de AGENTS.md — instrucciones para agentes de IA**
+
+Genera o actualiza archivos AGENTS.md siguiendo el [estándar abierto](https://agents.md/): setup, comandos de build/test verificados, convenciones de código y gotchas del proyecto. README para humanos, AGENTS.md para agentes.
+
+- ✅ Basado en evidencia del repo (nunca inventa comandos)
+- ✅ Soporte para monorepos con archivos anidados (closest-file-wins)
+- ✅ Modos generate y update (preserva reglas manuales)
+- ✅ Compatibilidad con CLAUDE.md, Copilot, Cursor, Gemini CLI
+- ✅ Output token-eficiente (< 150 líneas)
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "create AGENTS.md", "generate agent instructions", "crear AGENTS.md", "instrucciones para agentes"
 
 ---
 
@@ -136,6 +186,15 @@ npx skills add https://github.com/jrodrigopuca/skills --skill create-software-do
 
 # Context Compactor skill
 npx skills add https://github.com/jrodrigopuca/skills --skill context-compactor
+
+# Test Report skill
+npx skills add https://github.com/jrodrigopuca/skills --skill test-report
+
+# Changelog skill
+npx skills add https://github.com/jrodrigopuca/skills --skill create-changelog
+
+# AGENTS.md skill
+npx skills add https://github.com/jrodrigopuca/skills --skill create-agents-docs
 ```
 
 ### Opción 3: Clonar repositorio
@@ -151,6 +210,9 @@ cp -r build-report ~/.agents/skills/
 cp -r create-component-docs ~/.agents/skills/
 cp -r create-software-docs ~/.agents/skills/
 cp -r context-compactor ~/.agents/skills/
+cp -r test-report ~/.agents/skills/
+cp -r create-changelog ~/.agents/skills/
+cp -r create-agents-docs ~/.agents/skills/
 ```
 
 ## 💡 Uso
