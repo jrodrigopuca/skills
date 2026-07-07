@@ -1,6 +1,6 @@
 # 🤖 Agent Skills Collection
 
-Colección de 9 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
+Colección de 12 skills reutilizables para agentes de IA que mejoran la calidad del código y las mejores prácticas de desarrollo.
 
 ## 📚 Skills Disponibles
 
@@ -39,6 +39,22 @@ Escribe commits siguiendo Conventional Commits con tipos estándar, scopes, brea
 
 ---
 
+### [using-review-comments](using-review-comments/)
+
+**Conventional Comments para feedback de code review**
+
+El espejo de using-commit del lado del review: comentarios con label + decoración + subject (`issue (blocking):`, `suggestion (non-blocking):`), separando lo que bloquea de lo que no. Incluye reglas para reviews hechos por agentes.
+
+- ✅ 9 labels estándar con tabla de intención
+- ✅ Decoraciones blocking/non-blocking/if-minor
+- ✅ Reescrituras ❌/✅ por label y review completo de ejemplo
+- ✅ Anti-patterns (el interrogatorio, el rubber stamp, el muro sin labels)
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "review this PR", "code review feedback", "conventional comments", "comentarios de review"
+
+---
+
 ### [build-report](build-report/)
 
 **Generador de reportes estructurados de builds Node.js**
@@ -72,6 +88,22 @@ Analiza output de test runners (Jest, Vitest, Playwright, pytest) y genera un re
 - 📄 **Idioma:** Inglés (triggers bilingües)
 
 **Activadores:** "analyze test results", "test report", "failing tests", "flaky tests", "analizar tests", "tests fallidos"
+
+---
+
+### [deps-report](deps-report/)
+
+**Auditoría de dependencias con plan de upgrade priorizado**
+
+Tercera hermana de la familia report: convierte `npm audit` + `outdated` en un plan accionable. Clasifica por severidad × exposición real (prod/dev, directa/transitiva) × costo de fix, y ordena: parchear ya, majors planificados, batch de higiene, riesgo aceptado documentado.
+
+- ✅ npm, pnpm, yarn y pip-audit (shapes JSON documentados)
+- ✅ Severidad ≠ prioridad: pondera exposición y costo
+- ✅ Nunca `npm audit fix --force` (majors siempre explícitos)
+- ✅ Riesgo aceptado documentado, no ignorado
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "audit dependencies", "check vulnerabilities", "outdated packages", "auditar dependencias", "vulnerabilidades"
 
 ---
 
@@ -123,6 +155,22 @@ El payoff de using-commit: extrae el historial de commits, lo clasifica en secci
 - 📄 **Idioma:** Inglés (triggers bilingües)
 
 **Activadores:** "generate changelog", "release notes", "prepare the release", "generar changelog", "notas de versión"
+
+---
+
+### [create-adr](create-adr/)
+
+**Architecture Decision Records en el momento de la decisión**
+
+Registra decisiones de arquitectura cuando se toman — contexto, opciones consideradas (con sus contras honestas), decisión y consecuencias — en `docs/decisions/NNNN-titulo.md` con statuses e índice. Los ADRs aceptados son inmutables: se superseden, no se reescriben.
+
+- ✅ Formato Nygard/MADR con ejemplo completo trabajado
+- ✅ Criterio claro de qué merece ADR y qué no
+- ✅ Statuses: proposed/accepted/deprecated/superseded
+- ✅ Integra con context-compactor (drafts) y create-software-docs (backfill)
+- 📄 **Idioma:** Inglés (triggers bilingües)
+
+**Activadores:** "record this decision", "create an ADR", "architecture decision", "registrar decisión", "crear ADR"
 
 ---
 
@@ -195,6 +243,15 @@ npx skills add https://github.com/jrodrigopuca/skills --skill create-changelog
 
 # AGENTS.md skill
 npx skills add https://github.com/jrodrigopuca/skills --skill create-agents-docs
+
+# Dependency audit skill
+npx skills add https://github.com/jrodrigopuca/skills --skill deps-report
+
+# Review comments skill
+npx skills add https://github.com/jrodrigopuca/skills --skill using-review-comments
+
+# ADR skill
+npx skills add https://github.com/jrodrigopuca/skills --skill create-adr
 ```
 
 ### Opción 3: Clonar repositorio
@@ -213,6 +270,9 @@ cp -r context-compactor ~/.agents/skills/
 cp -r test-report ~/.agents/skills/
 cp -r create-changelog ~/.agents/skills/
 cp -r create-agents-docs ~/.agents/skills/
+cp -r deps-report ~/.agents/skills/
+cp -r using-review-comments ~/.agents/skills/
+cp -r create-adr ~/.agents/skills/
 ```
 
 ## 💡 Uso
@@ -322,9 +382,21 @@ Estas skills están diseñadas siguiendo el **patrón Anthropics/progressive dis
 - ✅ **Ejemplos prácticos** con casos buenos y malos
 - ✅ **Tamaño apropiado** (~1,000-2,500 líneas total)
 
+## 🔗 Cómo se conectan las skills
+
+```
+ENTENDER      create-agents-docs · create-software-docs · create-component-docs
+DECIDIR       create-adr
+TRABAJAR      build-report · test-report · deps-report
+REGISTRAR     using-jsdoc · using-commit · using-review-comments · create-changelog
+RECORDAR      context-compactor
+```
+
+Los handoffs entre skills (commits → changelog, drafts → ADRs, reportes → contexto persistido) están documentados en [CONTRIBUTING.md](CONTRIBUTING.md), junto con las convenciones de diseño de la suite. La validación es automática: `node scripts/validate-skills.mjs` corre en CI en cada push.
+
 ## 🤝 Contribuir
 
-Las contribuciones son bienvenidas! Para añadir una nueva skill:
+Las contribuciones son bienvenidas! Leé [CONTRIBUTING.md](CONTRIBUTING.md) para las convenciones completas. Para añadir una nueva skill:
 
 1. Fork este repositorio
 2. Crea una nueva skill siguiendo la estructura estándar

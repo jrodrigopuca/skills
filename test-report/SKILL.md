@@ -44,9 +44,18 @@ If the user can re-run tests, prefer **machine-readable output** — parsing it 
 
 If only pasted text output is available, parse it with the per-framework patterns in [references/parsers.md](references/parsers.md).
 
-### 2. Parse Failures
+### 2. Parse Failures — Script First
 
-Extract for every failure: suite/file, test name, failure message, error type, assertion diff (expected/received) when present, `file:line` of the failure, duration, and retry information if the runner reports it.
+**Deterministic parsing belongs in code, not in your context window.** Run the bundled parser; it handles Jest/Vitest JSON, Playwright JSON, JUnit XML, and raw text, and emits compact grouped JSON (normalized messages, categories, flaky list):
+
+```bash
+node {skill-dir}/assets/scripts/parse-tests.mjs test-results.json
+# or pipe:  npx vitest run --reporter=json | node {skill-dir}/assets/scripts/parse-tests.mjs
+```
+
+Analyze the JSON it returns instead of reading raw output. If `unparsedFailureHints > 0`, the text fallback missed failures — ask for a machine-readable re-run before trusting the numbers.
+
+**Fallback** (no Node available, or exotic runner): parse manually with the patterns in [references/parsers.md](references/parsers.md), extracting per failure: suite/file, test name, message, assertion diff, `file:line`, and retry info.
 
 ### 3. Classify Each Failure
 
@@ -96,7 +105,11 @@ Every group in the report must include:
 - A **suggested fix direction** with the relevant `file:line`
 - The command to re-run just that group, e.g. `npx vitest run src/auth/` or `pytest tests/test_auth.py -x`
 
-### 7. Offer Follow-Ups
+### 7. Persist the Report
+
+A report that only lives in the chat dies with the chat. Offer to save it to `.reports/YYYY-MM-DD-tests.md` (suggest gitignoring `.reports/` if the user doesn't want them versioned). If the project uses `context-compactor`, a one-paragraph summary note (`ccsave`) referencing the report file makes it findable next session — no re-analysis.
+
+### 8. Offer Follow-Ups
 
 - "Want me to fix the top group?"
 - "Should I update the stale snapshots after you confirm the UI change is intentional?"

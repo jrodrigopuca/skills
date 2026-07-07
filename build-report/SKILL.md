@@ -29,6 +29,7 @@ Build Report transforms raw build outputs into organized, prioritized reports us
 - **Documentation links:** Points to official docs, doesn't duplicate them
 - **Three workflow paths:** Fast (< 10 errors), Standard (10-100), Sampled (100+)
 - **Context-optimized:** Lazy loading per step
+- **Deterministic parsing:** Bundled `parse-build.mjs` script — code parses, the model analyzes
 
 ---
 
@@ -88,19 +89,22 @@ else:
 
 ### 2. Execution Phase - Parse Step
 
-**Launch:** `sub-skills/parse-build-output.md`  
-**Load:** Orchestrator + parse sub-skill (~2,500 tokens)  
-**Input:** Raw build output (string)  
-**Output:** Parsed Errors Artifact (JSON)
+**Script first:** run the bundled deterministic parser before considering the parse sub-skill:
 
-**Sub-skill responsibilities:**
+```bash
+node {skill-dir}/assets/scripts/parse-build.mjs build-output.txt
+# or pipe:  npm run build 2>&1 | node {skill-dir}/assets/scripts/parse-build.mjs
+```
 
-- Detect build tools (TypeScript, ESLint, Webpack, Vite)
-- Extract structured errors with file, line, code, message
-- Categorize by error type
-- Handle truncation if output too large
+It detects TypeScript, ESLint, webpack, and Vite/esbuild output and emits grouped JSON (by tool + error code, with normalized messages and per-tool summary cross-checks). **When the script succeeds, skip the parse sub-skill entirely** and feed its JSON straight into the analyze step — that is the cheap path.
 
-**Wait for artifact before proceeding.**
+**Fallback** — launch `sub-skills/parse-build-output.md` only when:
+
+- Node is unavailable, or
+- the script reports `unparsedErrorHints > 0` with few parsed groups (unknown tool), or
+- the output format is exotic (custom compilers, mixed CI wrappers)
+
+**Output either way:** Parsed Errors Artifact (JSON). Wait for it before proceeding.
 
 ### 3. Execution Phase - Analyze Step
 
@@ -148,6 +152,8 @@ else:
 ### 5. Delivery Phase
 
 **Present final report to user.**
+
+Offer to persist it to `.reports/YYYY-MM-DD-build.md` — reports that only live in the chat die with the chat. If the project uses `context-compactor`, a short `ccsave` summary referencing the file makes it findable next session.
 
 Offer follow-up options:
 
